@@ -19,7 +19,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.mysql.fabric.xmlrpc.base.Params;
 import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -29,11 +31,13 @@ public class Server {
 	static MySQLQueryExecutor mySQLQueryExecutor=new MySQLQueryExecutor("items");
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(Constants.port), 0);
-        server.createContext("/test", (HttpHandler) new TestHandler());
+        HttpContext context = server.createContext("/test", (HttpHandler) new TestHandler());
+        //context.getFilters().add(new ParameterFilter());
         server.createContext("/get", (HttpHandler) new SelectHandler());
         server.createContext("/insert", (HttpHandler) new InsertHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
+        System.out.println(server.getAddress());
     }
 
     static class InsertHandler implements HttpHandler {
@@ -44,7 +48,12 @@ public class Server {
             InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
             BufferedReader br = new BufferedReader(isr);
             String query = br.readLine();
-            parseQuery(query, parameters);
+            try {
+				parseQuery(query);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
             // send response
             String response = "";
@@ -72,7 +81,24 @@ public class Server {
 		@Override
 		public void handle(HttpExchange he) throws IOException {
 			JSONArray jsonArr = null;
-			jsonArr = mySQLQueryExecutor.getItems();
+	        Map<String, Object> params = new HashMap<String, Object>();
+            InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
+            BufferedReader br = new BufferedReader(isr);
+            String query = br.readLine();
+            JSONObject postData=null;
+            try {
+            	postData=parseQuery(query);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//			Object t=params.entrySet().
+			try {
+				jsonArr = mySQLQueryExecutor.getItems(Constants.getSelectQuery(postData));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             String ret=jsonArr.toString();
             he.sendResponseHeaders(200, ret.length());
             System.out.println(ret);
@@ -104,41 +130,24 @@ public class Server {
 		}
     } 
 
-    public static void parseQuery(String query, Map<String, 
-        	Object> parameters) throws UnsupportedEncodingException {
-
+    public static JSONObject parseQuery(String query) throws UnsupportedEncodingException, JSONException {
+    	JSONObject ret = null;
     	if (query != null) {
     		String pairs[] = query.split("[&]");
     		for (String pair : pairs) {
     			String param[] = pair.split("[=]");
     			String key = null;
-    			String value = null;
     			if (param.length > 0) {
     				key = URLDecoder.decode(param[0], 
     					System.getProperty("file.encoding"));
     			}
-
-    			if (param.length > 1) {
-    				value = URLDecoder.decode(param[1], 
-    					System.getProperty("file.encoding"));
-    			}
-
-    			if (parameters.containsKey(key)) {
-    				Object obj = parameters.get(key);
-    				if (obj instanceof List<?>) {
-    					List<String> values = (List<String>) obj;
-    					values.add(value);
-
-    				} else if (obj instanceof String) {
-    					List<String> values = new ArrayList<String>();
-    					values.add((String) obj);
-    					values.add(value);
-    					parameters.put(key, values);
-    				}
-    			} else {
-    				parameters.put(key, value);
+    			
+    			if(key!= null){
+    				ret=new JSONObject(key);
+    				return ret;
     			}
     		}
     	}
+		return ret;
     }
 }

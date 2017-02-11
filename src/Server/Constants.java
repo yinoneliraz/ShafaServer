@@ -1,5 +1,11 @@
 package Server;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Constants {
 	public static final int port=4000;
 	public static final String USER_AGENT="Shafa";
@@ -29,6 +35,22 @@ INSERT INTO table_name (column1,column2,column3,...)
   `lng` FLOAT( 10, 6 ) NOT NULL
 ) ENGINE = InnoDB ;
 */
+	public static String getSelectQuery(JSONObject params) throws JSONException{
+		String lat=params.getString("lat");
+		String lng=params.getString("lng");
+		String radius=params.getString("radius");
+		
+//		String query = String.format("SELECT `name`, `image`,`userName`, `size`, `price`,"
+//		+ " `lat` ,`lng`, `description` ,`swap`, "
+//		+ "( 6371 * acos( cos( radians('%0$s') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
+//		+ "radians('%1$s') ) + sin( radians('%0$s') ) * sin( radians( lat ) ) ) ) "
+//		+ "AS distance FROM items HAVING distance < '%2$s' ORDER BY distance LIMIT 0 , 20 ",
+//		lat,lng,radius);
+		return "SELECT `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`, "
+				+"( 6371 * acos( cos( radians('"+lat+"') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
+				+"radians('"+lng+"') ) + sin( radians('"+lat+"') ) * sin( radians( lat ) ) ) ) "
+				+"AS distance FROM items HAVING distance < '"+radius+"' ORDER BY distance LIMIT 0 , 20 ";
+	}
 }
 
 

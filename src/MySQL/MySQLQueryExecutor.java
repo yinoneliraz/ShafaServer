@@ -75,12 +75,8 @@ public class MySQLQueryExecutor {
 		} 
 		return jsonArr;
 	}
-	public JSONArray getItems(){
+	public JSONArray getItems(String query){
 		ResultSet rs=null;
-		String query = "SELECT name, image,userName, size, price, lat ,lng, description ,swap, "
-		+ "( 3959 * acos( cos( radians('%s') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians('%s') ) + sin( radians('%s') ) * sin( radians( lat ) ) ) ) "
-		+ "AS distance "
-		+ "FROM items ORDER BY distance;";
 		JSONArray jsonArr=new JSONArray();
 		try { 
 			// opening database connection to MySQL server 
