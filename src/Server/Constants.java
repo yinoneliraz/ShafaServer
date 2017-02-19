@@ -1,8 +1,7 @@
 package Server;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,18 +38,43 @@ INSERT INTO table_name (column1,column2,column3,...)
 		String lat=params.getString("lat");
 		String lng=params.getString("lng");
 		String radius=params.getString("radius");
-		
-//		String query = String.format("SELECT `name`, `image`,`userName`, `size`, `price`,"
-//		+ " `lat` ,`lng`, `description` ,`swap`, "
-//		+ "( 6371 * acos( cos( radians('%0$s') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
-//		+ "radians('%1$s') ) + sin( radians('%0$s') ) * sin( radians( lat ) ) ) ) "
-//		+ "AS distance FROM items HAVING distance < '%2$s' ORDER BY distance LIMIT 0 , 20 ",
-//		lat,lng,radius);
+
 		return "SELECT `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`, "
 				+"( 6371 * acos( cos( radians('"+lat+"') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
 				+"radians('"+lng+"') ) + sin( radians('"+lat+"') ) * sin( radians( lat ) ) ) ) "
 				+"AS distance FROM items HAVING distance < '"+radius+"' ORDER BY distance LIMIT 0 , 20 ";
 	}
+	
+	public static String getInsertQuery(JSONObject params) throws JSONException{
+		String ret = "INSERT INTO `items`(`name`, `owner_id`, `category`, `size`, `price`, `description`, "
+				+"`lat`, `lng`,	`image`, `swap`, `from`, `userName`)"
+				+"VALUES ('"+ params.getString("name") +"', '"+ params.getString("owner_id") +"', '"+ params.getString("category") +"', "
+				+ "'"+ params.getString("size") +"', '"+ params.getString("price") +"', '"+ params.getString("description") +"', "
+				+"'"+ params.getString("lat") +"', '"+ params.getString("lng") +"', '"+ params.getString("images") +"', "
+						+ "'"+ params.getString("swap") +"', '"+params.getString("from") +"', '"+ params.getString("userName")+"');";
+
+		return ret;
+	}
+    public static JSONObject parseQuery(String query) throws UnsupportedEncodingException, JSONException {
+    	JSONObject ret = null;
+    	if (query != null) {
+    		String pairs[] = query.split("[&]");
+    		for (String pair : pairs) {
+    			String param[] = pair.split("[=]");
+    			String key = null;
+    			if (param.length > 0) {
+    				key = URLDecoder.decode(param[0], 
+    					System.getProperty("file.encoding"));
+    			}
+    			
+    			if(key!= null){
+    				ret=new JSONObject(key);
+    				return ret;
+    			}
+    		}
+    	}
+		return ret;
+    }
 }
 
 

@@ -99,7 +99,6 @@ public class MySQLQueryExecutor {
             		json.put("price", rs.getString("price"));
 
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             	jsonArr.put(json);
@@ -135,18 +134,14 @@ public class MySQLQueryExecutor {
 	}
 	
 	public int executeSQL(String sql){
-		int count=0;
-		ResultSet rs=null;
+		int rs=0;
 		try { 
 			// opening database connection to MySQL server 
 			con = DriverManager.getConnection(url, user, password);
 			// getting Statement object to execute query 
 			stmt = con.createStatement(); 
 			// executing SELECT query 
-			rs = stmt.executeQuery(sql); 
-			while (rs.next()) {
-				count = rs.getInt(1); 
-			} 
+			rs = stmt.executeUpdate(sql); 
 		} 
 		catch (SQLException sqlEx) { 
 			sqlEx.printStackTrace(); 
@@ -167,7 +162,7 @@ public class MySQLQueryExecutor {
 				/*can't do anything */ 
 			} 
 		} 
-		return count;
+		return rs;
 	}
 	
 	public int countItems() { 
