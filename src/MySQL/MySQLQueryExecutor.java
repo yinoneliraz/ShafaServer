@@ -19,9 +19,15 @@ public class MySQLQueryExecutor {
 	// JDBC variables for opening and managing connection 
 	private static Connection con; 
 	private static Statement stmt; 
-	String tableName="";
-	public MySQLQueryExecutor(String tableName){
-		this.tableName=tableName;
+	static MySQLQueryExecutor instance=null;
+	private MySQLQueryExecutor(){
+	}
+	
+	public static MySQLQueryExecutor getInstance(){
+		if(instance==null){
+			instance=new MySQLQueryExecutor();
+		}
+		return instance;
 	}
 	
 	public JSONArray getAllRecords() throws JSONException{
@@ -89,6 +95,7 @@ public class MySQLQueryExecutor {
             while(rs.next()){
             	JSONObject json=new JSONObject();
             	try {
+            		json.put("id", rs.getString("id"));
             		json.put("name", rs.getString("name"));
             		json.put("image", rs.getString("image"));
             		json.put("size", rs.getString("size"));
@@ -97,6 +104,7 @@ public class MySQLQueryExecutor {
             		json.put("distance", rs.getString("distance"));
 					json.put("swap",rs.getString("swap"));
             		json.put("price", rs.getString("price"));
+            		json.put("from", rs.getString("from"));
 
 				} catch (JSONException e) {
 					e.printStackTrace();
