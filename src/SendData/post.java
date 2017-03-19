@@ -27,8 +27,8 @@ public class post {
 	    con.setRequestProperty("User-Agent", Constants.USER_AGENT);
 	    con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 	
-	    String urlParameters = String.format("oc_username=%1$s&oc_password=%2$s&rc_id=%3$s&rc_system=%4$s", "alonlond","alondoN1",
-	    									"305778557","sc");
+	    String urlParameters = String.format("oc_username=%1$s&oc_password=%2$s&rc_id=%3$s&rc_system=%4$s", "yinonel","aDova216",
+	    									"305335911","sc");
 	
 	    // Send post request
 	    con.setDoOutput(true);
@@ -85,7 +85,7 @@ public class post {
 	    regCon.setRequestMethod("POST");
 	    regCon.setRequestProperty("User-Agent", Constants.USER_AGENT);
 	    regCon.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-	    
+
 	    urlParameters = String.format("rc_rowid=%1$s&rn_student_degree=%2$s&rn_department=%3$s&rn_degree_level=%4$s&rn_student_path=%5$s"
 	    		+ "&rn_year=%6$s&rn_semester=%7$s&rn_course_institution=%8$s&rn_course_department=%9$s&rn_course_degree_level=%10$s&rn_course=%11$s"
 	    		+ "&rn_consult_term=%12$s&rn_course_exists=%13$s&rn_StudentAuthorization_semester=%14$s&rn_CoursesPrintout_semester=%15$s"

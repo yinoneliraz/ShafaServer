@@ -12,6 +12,8 @@ public class Main {
         server.createContext("/get", (HttpHandler) new getHandler());
         server.createContext("/insert", (HttpHandler) new InsertHandler());
         server.createContext("/basket", (HttpHandler) new BasketHandler());
+        server.createContext("/mybag", (HttpHandler) new MyBagHandler());
+        server.createContext("/myitems", (HttpHandler) new getMyItems());
         server.setExecutor(null);
         server.start();
         System.out.println(server.getAddress());

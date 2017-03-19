@@ -2,6 +2,8 @@ package Server;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,14 +20,29 @@ public class Constants {
 
 
 	public static String getSelectQuery(JSONObject params) throws JSONException{
+		final String[] sizes={"XS","S","M","L","XL","XXL","XXXL"};
 		String lat=params.getString("lat");
 		String lng=params.getString("lng");
 		String radius=params.getString("radius");
-
-		return "SELECT `id`, `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`,`from`, "
+		String price=params.getString("price");
+		String[] sizeArr=params.getString("shirtsize").split(",");
+		int size=params.getInt("pantssize");
+		sizeArr[0]=sizeArr[0].replace("[","");
+		sizeArr[0]=sizeArr[sizeArr.length-1].replace("]","");
+		String group="(";
+		for(int i=0;i<7;i++){
+			if(Boolean.parseBoolean(sizeArr[i]))
+				group+="\"" + sizes[i] + "\",";
+		}
+		group=group.substring(0,group.length()-1)+")";
+		String ret= "SELECT `id`, `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`,`from`, "
 				+"( 6371 * acos( cos( radians('"+lat+"') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
 				+"radians('"+lng+"') ) + sin( radians('"+lat+"') ) * sin( radians( lat ) ) ) ) "
-				+"AS distance FROM items HAVING distance < '"+radius+"' ORDER BY distance LIMIT 0 , 20 ";
+				+"AS distance FROM items HAVING distance < '"+radius+"' AND price <= "+price+" AND ( (size >= "+ (size- 2) + " AND" +
+				" size <= " + (size+2) + ") OR" +
+				" size IN "+ group +" ) ORDER BY distance LIMIT 0 , 20 ;";
+		System.out.println(ret + "\n");
+		return ret;
 	}
 	
 	public static String getInsertQuery(JSONObject params) throws JSONException{
@@ -76,13 +93,27 @@ public class Constants {
 		String lng=params.getString("lng");
 		String radius=params.getString("radius");
 
-    	String ret="SELECT `id`, `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`,`from`, "
+		String ret="SELECT DISTINCT baskets.userId, baskets.itemID,items.id, items.name, items.image,items.userName," +
+				" items.size, items.price, items.lat ,items.lng, " +
+				"items.description ,items.swap,items.from, "
 				+"( 6371 * acos( cos( radians('"+lat+"') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
 				+"radians('"+lng+"') ) + sin( radians('"+lat+"') ) * sin( radians( lat ) ) ) ) "
-				+"AS distance FROM items HAVING distance < '"+radius+"' ORDER BY distance LIMIT 0 , 20 ";
-    	
+				+"AS distance FROM baskets, items " +
+				"WHERE items.id = baskets.itemID" +
+				" HAVING distance < '"+radius+"' ORDER BY distance LIMIT 0 , 20 ;";
     	return ret;
     }
+
+	public static String getItemsGetQuery(JSONObject params) throws JSONException{
+		String userId=params.getString("userID");
+
+		String ret="SELECT DISTINCT baskets.userId, items.owner_id , items.id, items.name, items.image,items.userName," +
+				" items.size, items.price, items.lat ,items.lng, " +
+				"items.description ,items.swap,items.from FROM baskets, items " +
+				"WHERE items.owner_id = " + userId + " ;";
+		System.out.println(ret + "\n");
+		return ret;
+	}
 }
 
 

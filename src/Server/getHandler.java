@@ -1,9 +1,9 @@
 package Server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,11 +34,18 @@ public class getHandler implements HttpHandler {
 		} catch (JSONException e) {
 			System.out.println("ERROR: 		SelectHandler,handle,getItems, on query: " + query);
 		}
-        String ret=jsonArr.toString();
-        he.sendResponseHeaders(200, ret.length());
-        System.out.println(ret);
-        OutputStream os = he.getResponseBody();
-        os.write(ret.toString().getBytes());
-        os.close();
+
+		String encoding = "UTF-8";
+		String ret = jsonArr.toString();
+		he.getResponseHeaders().set("Content-Type", "application/json; charset=" + encoding);
+
+		//ret= URLDecoder.decode(ret, "UTF-8");
+
+		byte[] bytes = ret.getBytes(StandardCharsets.UTF_8);
+		he.sendResponseHeaders(200, bytes.length);
+		System.out.println(ret);
+		OutputStream os = he.getResponseBody();
+		os.write(bytes);
+		os.close();
 	}
 }

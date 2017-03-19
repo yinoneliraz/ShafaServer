@@ -1,10 +1,6 @@
 package MySQL;
 
-import java.sql.Connection; 
-import java.sql.DriverManager; 
-import java.sql.ResultSet; 
-import java.sql.SQLException; 
-import java.sql.Statement;
+import java.sql.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,7 +87,8 @@ public class MySQLQueryExecutor {
 			// getting Statement object to execute query 
 			stmt = con.createStatement(); 
 			// executing SELECT query 
-			rs = stmt.executeQuery(query); 
+			rs = stmt.executeQuery(query);
+
             while(rs.next()){
             	JSONObject json=new JSONObject();
             	try {
@@ -101,7 +98,12 @@ public class MySQLQueryExecutor {
             		json.put("size", rs.getString("size"));
             		json.put("description", rs.getString("description"));
             		json.put("userName", rs.getString("userName"));
-            		json.put("distance", rs.getString("distance"));
+            		try{
+						json.put("distance", rs.getString("distance"));
+					}
+					catch(java.sql.SQLException ex){
+
+					}
 					json.put("swap",rs.getString("swap"));
             		json.put("price", rs.getString("price"));
             		json.put("from", rs.getString("from"));
