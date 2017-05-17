@@ -3,9 +3,8 @@ package Server.httphandlers;
 import java.io.*;
 
 import Server.Constants;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -22,14 +21,14 @@ public class GetHandler implements HttpHandler {
 		JSONObject postData=null;
 		try {
 			postData= Constants.parseQuery(query);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			System.out.println("ERROR: SelectHandler,handle,parseQuery, on query: " + query);
 		}
 
 		try {
 			query=Constants.getSelectQuery(postData);
 			jsonArr = MySQLQueryExecutor.getInstance().getItems(query);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			System.out.println("ERROR: SelectHandler,handle,getItems, on query: " + query);
 		}
 

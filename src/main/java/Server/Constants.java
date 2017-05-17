@@ -3,9 +3,9 @@ package Server;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class Constants {
 	public static final int port=4000;
@@ -19,17 +19,17 @@ public class Constants {
 								+ "lat=%8$f&lng=%9$f";
 
 
-	public static String getSelectQuery(JSONObject params) throws JSONException{
+	public static String getSelectQuery(JSONObject params) throws Exception{
 		final String[] sizes={"XS","S","M","L","XL","XXL","XXXL"};
 		if (params==null){
 			return "";
 		}
-		String lat=params.getString("lat");
-		String lng=params.getString("lng");
-		String radius=params.getString("radius");
-		String price=params.getString("price");
-		String[] sizeArr=params.getString("shirtsize").split(",");
-		int size=params.getInt("pantssize");
+		String lat=(String)params.get("lat");
+		String lng=(String)params.get("lng");
+		String radius=(String)params.get("radius");
+		String price=(String)params.get("price");
+		String[] sizeArr=params.get("shirtsize").toString().split(",");
+		int size=Integer.parseInt(params.get("pantssize").toString());
 		sizeArr[0]=sizeArr[0].replace("[","");
 		sizeArr[0]=sizeArr[sizeArr.length-1].replace("]","");
 		String group="(";
@@ -48,17 +48,17 @@ public class Constants {
 		return ret;
 	}
 	
-	public static String getInsertQuery(JSONObject params) throws JSONException{
+	public static String getInsertQuery(JSONObject params) throws Exception{
 		String ret = "INSERT INTO `items`(`name`, `owner_id`, `category`, `size`, `price`, `description`, "
 				+"`lat`, `lng`,	`image`, `swap`, `from`, `userName`)"
-				+"VALUES ('"+ params.getString("name") +"', '"+ params.getString("owner_id") +"', '"+ params.getString("category") +"', "
-				+ "'"+ params.getString("size") +"', '"+ params.getString("price") +"', '"+ params.getString("description") +"', "
-				+"'"+ params.getString("lat") +"', '"+ params.getString("lng") +"', '"+ params.getString("images") +"', "
-						+ "'"+ params.getString("swap") +"', '"+params.getString("from") +"', '"+ params.getString("userName")+"');";
+				+"VALUES ('"+ (String)params.get("name") +"', '"+ (String)params.get("owner_id") +"', '"+ (String)params.get("category") +"', "
+				+ "'"+ (String)params.get("size") +"', '"+ (String)params.get("price") +"', '"+ (String)params.get("description") +"', "
+				+"'"+ (String)params.get("lat") +"', '"+ (String)params.get("lng") +"', '"+ (String)params.get("images") +"', "
+						+ "'"+ (String)params.get("swap") +"', '"+(String)params.get("from") +"', '"+ (String)params.get("userName")+"');";
 		return ret;
 	}
 	
-    public static JSONObject parseQuery(String query) throws UnsupportedEncodingException, JSONException {
+    public static JSONObject parseQuery(String query) throws Exception {
     	JSONObject ret = null;
     	if (query != null) {
     		String pairs[] = query.split("[&]");
@@ -71,7 +71,9 @@ public class Constants {
     			}
     			
     			if(key!= null){
-    				ret=new JSONObject(key);
+					JSONParser parser = new JSONParser();
+					Object obj = parser.parse(key);
+    				ret=(JSONObject) obj;
     				return ret;
     			}
     		}
@@ -83,18 +85,18 @@ public class Constants {
     	String ret="";
 		try {
 			ret = "INSERT INTO `menagerie`.`baskets` (`userID`, `itemID`) VALUES ("+
-					params.getString("userID")+", "+params.getString("itemID")+");";
-		} catch (JSONException e) {
+					params.get("userID")+", "+params.get("itemID")+");";
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
     	
     	return ret;
     }
     
-    public static String getBasketGetQuery(JSONObject params) throws JSONException{
-		String lat=params.getString("lat");
-		String lng=params.getString("lng");
-		String radius=params.getString("radius");
+    public static String getBasketGetQuery(JSONObject params) throws Exception{
+		String lat=(String)params.get("lat");
+		String lng=(String)params.get("lng");
+		String radius=(String)params.get("radius");
 
 		String ret="SELECT DISTINCT baskets.userId, baskets.itemID,items.id, items.name, items.image,items.userName," +
 				" items.size, items.price, items.lat ,items.lng, " +
@@ -107,8 +109,8 @@ public class Constants {
     	return ret;
     }
 
-	public static String getItemsGetQuery(JSONObject params) throws JSONException{
-		String userId=params.getString("userID");
+	public static String getItemsGetQuery(JSONObject params) throws Exception{
+		String userId=(String)params.get("userID");
 
 		String ret="SELECT DISTINCT baskets.userId, items.owner_id , items.id, items.name, items.image,items.userName," +
 				" items.size, items.price, items.lat ,items.lng, " +

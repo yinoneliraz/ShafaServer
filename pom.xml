@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>yotam</groupId>
-    <artifactId>my_demo</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>shafa</artifactId>
+    <version>1.0</version>
     <packaging>jar</packaging>
     <build>
         <plugins>
@@ -21,16 +21,23 @@
                     </archive>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
 
-        <!-- https://mvnrepository.com/artifact/org.json/json -->
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20080701</version>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.sun.net.httpserver/http -->

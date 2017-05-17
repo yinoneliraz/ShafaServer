@@ -5,9 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -24,7 +23,7 @@ public class BasketHandler implements HttpHandler {
         String query = br.readLine();
         try {
         	params= Server.Constants.parseQuery(query);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			System.out.println("ERROR: 		BasketHandler,handle,parseQuery, on query: " + query);
 		}
 
@@ -38,8 +37,8 @@ public class BasketHandler implements HttpHandler {
         JSONArray array=new JSONArray();
         try {
 			retJson.put("return", ""+retVal+"");
-			array.put(retJson);
-		} catch (JSONException e) {
+			array.add(retJson);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
         String ret="OK";

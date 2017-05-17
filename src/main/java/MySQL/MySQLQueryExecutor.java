@@ -2,9 +2,8 @@ package MySQL;
 
 import java.sql.*;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject; 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 /** * Simple Java program to connect to MySQL database running on localhost and * 
 running SELECT and INSERT query to retrieve and add data. * @author Javin Paul */ 
 public class MySQLQueryExecutor { 
@@ -42,7 +41,7 @@ public class MySQLQueryExecutor {
 		return null;
 	}
 
-	public JSONArray getAllRecords() throws JSONException{
+	public JSONArray getAllRecords() throws Exception{
 		ResultSet rs=null;
 		String query = "SELECT name, image,userName, size,from, price, lat ,lng, description ,swap "
 		+ "( 3959 * acos( cos( radians('%s') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians('%s') ) + sin( radians('%s') ) * sin( radians( lat ) ) ) ) "
@@ -62,7 +61,7 @@ public class MySQLQueryExecutor {
             	JSONObject json=new JSONObject();
             	json.put("name", rs.getString("Name"));
             	json.put("address",rs.getString("Address"));
-            	jsonArr.put(json);
+            	jsonArr.add(json);
             }
             rs.close();
 		} 
@@ -124,10 +123,10 @@ public class MySQLQueryExecutor {
             		json.put("price", rs.getString("price"));
             		json.put("from", rs.getString("from"));
 
-				} catch (JSONException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
-            	jsonArr.put(json);
+            	jsonArr.add(json);
             }
             rs.close();
 		} 

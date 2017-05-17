@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="my_demo" />
         <module name="ShikitServer" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="my_demo" target="1.5" />
       <module name="ShikitServer" target="1.5" />
     </bytecodeTargetLevel>
   </component>

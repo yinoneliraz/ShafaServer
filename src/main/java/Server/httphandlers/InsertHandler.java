@@ -6,9 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import Server.Constants;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -25,7 +24,7 @@ public class InsertHandler implements HttpHandler {
         String query = br.readLine();
         try {
         	params= Constants.parseQuery(query);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			System.out.println("ERROR: 		InsertHandler,handle,parseQuery, on query: " + query);
 		}
 
@@ -36,15 +35,15 @@ public class InsertHandler implements HttpHandler {
 			System.out.println(query);
 			retVal=MySQLQueryExecutor.getInstance().executeSQL(query);
 			System.out.println("Insert query execution returned : " + retVal);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			System.out.println("ERROR: 		InsertHandler,handle,getInsertQuery, on query: " + query);
 		}
         JSONObject retJson=new JSONObject();
         JSONArray array=new JSONArray();
         try {
 			retJson.put("return", ""+retVal+"");
-			array.put(retJson);
-		} catch (JSONException e) {
+			array.add(retJson);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
         String ret="OK";

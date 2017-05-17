@@ -2,9 +2,8 @@ package Server.httphandlers;
 
 
 import Server.Constants;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -25,13 +24,13 @@ public class MyBagHandler implements HttpHandler {
 
         try {
             params= Constants.parseQuery(query);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             System.out.println("ERROR: 		BasketHandler,handle,parseQuery, on query: " + query);
         }
 
         try {
             query=Constants.getBasketGetQuery(params);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
