@@ -41,7 +41,7 @@ public class MyBagHandler implements HttpHandler {
         jsonArr=MySQLQueryExecutor.getInstance().getItems(query);
         System.out.println("Insert query execution returned : " + retVal);
         String ret=jsonArr.toString();
-        he.sendResponseHeaders(200, ret.length());
+        he.sendResponseHeaders(200, ret.toString().getBytes().length);
         OutputStream os = he.getResponseBody();
         os.write(ret.toString().getBytes());
         os.close();

@@ -43,7 +43,7 @@ public class BasketHandler implements HttpHandler {
 			e.printStackTrace();
 		}
         String ret="OK";
-        he.sendResponseHeaders(200, ret.length());
+        he.sendResponseHeaders(200, response.toString().getBytes().length);
         System.out.println(ret);
         OutputStream os = he.getResponseBody();
         os.write(response.toString().getBytes());

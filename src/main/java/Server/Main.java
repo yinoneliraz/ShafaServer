@@ -12,11 +12,10 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-import MySQL.MySQLQueryExecutor;
 public class Main {
-	static MySQLQueryExecutor mySQLQueryExecutor=MySQLQueryExecutor.getInstance();
+
     public static void main(String[] args) throws Exception {
-        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(4000), 0);
         server.createContext("/test", new MyHandler());
         server.createContext("/get",  new GetHandler());
         server.createContext("/insert", new InsertHandler());

@@ -20,7 +20,7 @@ public class GetHandler implements HttpHandler {
 		BufferedReader br = new BufferedReader(isr);
 		String query = br.readLine();
 		JSONObject postData=null;
-/*		try {
+		try {
 			postData= Constants.parseQuery(query);
 		} catch (JSONException e) {
 			System.out.println("ERROR: SelectHandler,handle,parseQuery, on query: " + query);
@@ -31,7 +31,7 @@ public class GetHandler implements HttpHandler {
 			jsonArr = MySQLQueryExecutor.getInstance().getItems(query);
 		} catch (JSONException e) {
 			System.out.println("ERROR: SelectHandler,handle,getItems, on query: " + query);
-		}*/
+		}
 
 		String encoding = "UTF-8";
 		String ret = jsonArr!=null?jsonArr.toString():"";
@@ -39,10 +39,9 @@ public class GetHandler implements HttpHandler {
 
 
 
-		he.sendResponseHeaders(200, ret.length());
+		he.sendResponseHeaders(200, ret.toString().getBytes().length);
 		OutputStream os = he.getResponseBody();
-        String response = "This is GET response" + he.getRequestBody();
-		os.write(response.getBytes());
+		os.write(ret.getBytes());
 		os.close();
 
 	}

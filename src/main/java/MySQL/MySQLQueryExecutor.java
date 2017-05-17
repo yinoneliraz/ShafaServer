@@ -8,10 +8,10 @@ import org.json.JSONObject;
 /** * Simple Java program to connect to MySQL database running on localhost and * 
 running SELECT and INSERT query to retrieve and add data. * @author Javin Paul */ 
 public class MySQLQueryExecutor { 
-	// JDBC URL, username and password of MySQL server 
-	private static final String url = "jdbc:mysql://localhost:3306/menagerie"; 
+	// JDBC URL, username and password of MySQL server
+	private static final String url = "jdbc:mysql://shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com:3306";
 	private static final String user = "root"; 
-	private static final String password = "root"; 
+	private static final String password = "root";
 	// JDBC variables for opening and managing connection 
 	private static Connection con; 
 	private static Statement stmt; 
@@ -25,7 +25,23 @@ public class MySQLQueryExecutor {
 		}
 		return instance;
 	}
-	
+
+	private static Connection getRemoteConnection() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			String dbName = "menagerie";
+			String userName = "root";
+			String password = "621adova";//:3306
+			String hostname = "shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com";
+			String port = "3306";
+			String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
+			Connection con = DriverManager.getConnection(jdbcUrl);
+			return con;
+		}
+		catch (Exception e) { System.out.println("Error"); }
+		return null;
+	}
+
 	public JSONArray getAllRecords() throws JSONException{
 		ResultSet rs=null;
 		String query = "SELECT name, image,userName, size,from, price, lat ,lng, description ,swap "
@@ -36,7 +52,7 @@ public class MySQLQueryExecutor {
 		JSONArray jsonArr=new JSONArray();
 		try { 
 			// opening database connection to MySQL server 
-			con = DriverManager.getConnection(url, user, password);
+			con = getRemoteConnection();// DriverManager.getConnection(url, user, password);
 			
 			// getting Statement object to execute query 
 			stmt = con.createStatement(); 
@@ -82,7 +98,7 @@ public class MySQLQueryExecutor {
 		JSONArray jsonArr=new JSONArray();
 		try { 
 			// opening database connection to MySQL server 
-			con = DriverManager.getConnection(url, user, password);
+			con = getRemoteConnection();// DriverManager.getConnection(url, user, password);
 			
 			// getting Statement object to execute query 
 			stmt = con.createStatement(); 
