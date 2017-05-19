@@ -11,7 +11,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import MySQL.MySQLQueryExecutor;
 
-public class GetHandler implements HttpHandler {
+public class GetItemsHandler implements HttpHandler {
 
 	public void handle(HttpExchange he) throws IOException {
 		JSONArray jsonArr = null;
@@ -35,8 +35,6 @@ public class GetHandler implements HttpHandler {
 		String encoding = "UTF-8";
 		String ret = jsonArr!=null?jsonArr.toString():"";
 		he.getResponseHeaders().set("Content-Type", "application/json; charset=" + encoding);
-
-
 
 		he.sendResponseHeaders(200, ret.toString().getBytes().length);
 		OutputStream os = he.getResponseBody();

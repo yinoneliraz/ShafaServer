@@ -16,6 +16,7 @@ public class MySQLQueryExecutor {
 	private static Statement stmt; 
 	static MySQLQueryExecutor instance=null;
 	private MySQLQueryExecutor(){
+		con = getRemoteConnection();
 	}
 	
 	public static MySQLQueryExecutor getInstance(){
@@ -30,7 +31,7 @@ public class MySQLQueryExecutor {
 			Class.forName("com.mysql.jdbc.Driver");
 			String dbName = "menagerie";
 			String userName = "root";
-			String password = "621adova";//:3306
+			String password = "621adova";
 			String hostname = "shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com";
 			String port = "3306";
 			String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
@@ -41,65 +42,77 @@ public class MySQLQueryExecutor {
 		return null;
 	}
 
-	public JSONArray getAllRecords() throws Exception{
-		ResultSet rs=null;
-		String query = "SELECT name, image,userName, size,from, price, lat ,lng, description ,swap "
-		+ "( 3959 * acos( cos( radians('%s') ) * cos( radians( lat ) ) * cos( radians( lng ) - radians('%s') ) + sin( radians('%s') ) * sin( radians( lat ) ) ) ) "
-		+ "AS distance "
-		+ "FROM items HAVING distance < '%s' ORDER BY distance LIMIT 0 , 20";
+	private boolean closeConnection(){
+		//close connection ,stmt and resultset here
+		try {
+			con.close();
+			return true;
+		}
+		catch(SQLException se) {
+			return false;
+		}
+	}
 
+	private boolean cleanUp(ResultSet rs, Statement stmt){
+		try {
+			stmt.close();
+		}
+		catch(SQLException se) {
+			return false;
+		}
+		try {
+			if(rs!=null)
+				rs.close();
+			return true;
+		}
+		catch(SQLException se) {
+			return false;
+		}
+
+	}
+
+	public JSONArray getMessages(String query){
+		ResultSet rs;
 		JSONArray jsonArr=new JSONArray();
-		try { 
-			// opening database connection to MySQL server 
-			con = getRemoteConnection();// DriverManager.getConnection(url, user, password);
-			
-			// getting Statement object to execute query 
-			stmt = con.createStatement(); 
-			// executing SELECT query 
-			rs = stmt.executeQuery(query); 
-            while(rs.next()){
-            	JSONObject json=new JSONObject();
-            	json.put("name", rs.getString("Name"));
-            	json.put("address",rs.getString("Address"));
-            	jsonArr.add(json);
-            }
-            rs.close();
-		} 
-		catch (SQLException sqlEx) { 
-			sqlEx.printStackTrace(); 
-		} 
-		finally { 
-			//close connection ,stmt and resultset here 
-			try { 
-				con.close();
-			} 
-			catch(SQLException se) {
-				/*can't do anything */
-				return jsonArr;
-			} 
-			try {
-				stmt.close(); 
-			} 
-			catch(SQLException se) { 
-				/*can't do anything */ 
-			} 
-			try { 
-				rs.close(); 
-			} 
-			catch(SQLException se) { 
-				/*can't do anything */ 
-			} 
-		} 
+		try {
+			// opening database connection to MySQL server
+			// getting Statement object to execute query
+			stmt = con.createStatement();
+			// executing SELECT query
+			rs = stmt.executeQuery(query);
+			while(rs.next()){
+				JSONObject json=new JSONObject();
+				json.put("messageId", rs.getString("messageId"));
+				json.put("fromUserId", rs.getString("fromUserId"));
+				json.put("toUserId", rs.getString("toUserId"));
+				json.put("fromUserImg", rs.getString("fromUserImg"));
+				json.put("toUserImg", rs.getString("toUserImg"));
+				json.put("fromUserName", rs.getString("fromUserName"));
+				json.put("toUserName", rs.getString("toUserName"));
+				json.put("messageStr",rs.getString("messageStr"));
+				json.put("regardingItem",rs.getString("regardingItem"));
+				json.put("itemImage",rs.getString("itemImage"));
+				json.put("messageDate",rs.getString("messageDate"));
+				jsonArr.add(json);
+			}
+			rs.close();
+		}
+		catch (SQLException sqlEx) {
+			System.out.println(sqlEx.toString());
+			return null;
+		}
+		finally {
+			cleanUp(null,stmt);
+		}
 		return jsonArr;
 	}
+
+
 	public JSONArray getItems(String query){
 		ResultSet rs=null;
 		JSONArray jsonArr=new JSONArray();
 		try { 
-			// opening database connection to MySQL server 
-			con = getRemoteConnection();// DriverManager.getConnection(url, user, password);
-			
-			// getting Statement object to execute query 
+			// getting Statement object to execute query
 			stmt = con.createStatement(); 
 			// executing SELECT query 
 			rs = stmt.executeQuery(query);
@@ -122,38 +135,17 @@ public class MySQLQueryExecutor {
 					json.put("swap",rs.getString("swap"));
             		json.put("price", rs.getString("price"));
             		json.put("from", rs.getString("from"));
-
+					jsonArr.add(json);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-            	jsonArr.add(json);
             }
-            rs.close();
-		} 
+		}
 		catch (SQLException sqlEx) { 
 			sqlEx.printStackTrace(); 
 		} 
-		finally { 
-			//close connection ,stmt and resultset here 
-			try { 
-				con.close();
-			} 
-			catch(SQLException se) {
-				/*can't do anything */
-				return jsonArr;
-			} 
-			try {
-				stmt.close(); 
-			} 
-			catch(SQLException se) { 
-				/*can't do anything */ 
-			} 
-			try { 
-				rs.close(); 
-			} 
-			catch(SQLException se) { 
-				/*can't do anything */ 
-			} 
+		finally {
+			cleanUp(rs,stmt);
 		} 
 		return jsonArr;
 	}
@@ -161,69 +153,17 @@ public class MySQLQueryExecutor {
 	public int executeSQL(String sql){
 		int rs=0;
 		try { 
-			// opening database connection to MySQL server 
-			con = DriverManager.getConnection(url, user, password);
-			// getting Statement object to execute query 
+			// getting Statement object to execute query
 			stmt = con.createStatement(); 
 			// executing SELECT query 
-			rs = stmt.executeUpdate(sql); 
+			rs = stmt.executeUpdate(sql);
 		} 
-		catch (SQLException sqlEx) { 
-			sqlEx.printStackTrace(); 
-		} 
-		finally { 
-			//close connection ,stmt and resultset here 
-			try { 
-				con.close();
-			} 
-			catch(SQLException se) {
-				/*can't do anything */
-				return -1;
-			} 
-			try {
-				stmt.close(); 
-			} 
-			catch(SQLException se) { 
-				/*can't do anything */ 
-			} 
+		catch (SQLException sqlEx) {
+			System.out.println(sqlEx.toString());
+		}
+		finally {
+			cleanUp(null,stmt);
 		} 
 		return rs;
 	}
-	
-	public int countItems() { 
-		String query = "select count(*) from markers"; 
-		int count=0;
-		ResultSet rs=null;
-		try { 
-			// opening database connection to MySQL server 
-			con = DriverManager.getConnection(url, user, password);
-			// getting Statement object to execute query 
-			stmt = con.createStatement(); 
-			// executing SELECT query 
-			rs = stmt.executeQuery(query); 
-			while (rs.next()) {
-				count = rs.getInt(1); 
-			} 
-		} 
-		catch (SQLException sqlEx) { 
-			sqlEx.printStackTrace(); 
-		} 
-		finally { 
-			//close connection ,stmt and resultset here 
-			try { 
-				con.close();
-			} 
-			catch(SQLException se) {
-				/*can't do anything */
-				return -1;
-			} 
-			try {
-				stmt.close(); 
-			} 
-			catch(SQLException se) { 
-				/*can't do anything */ 
-			} 
-		} 
-		return count;
-	} 
 }

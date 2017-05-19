@@ -25,7 +25,7 @@ public class GetMyItems implements HttpHandler {
         try {
             params=Constants.parseQuery(query);
         } catch (Exception e) {
-            System.out.println("ERROR: 		BasketHandler,handle,parseQuery, on query: " + query);
+            System.out.println("ERROR: 		InsertItemToBasketHandler,handle,parseQuery, on query: " + query);
         }
 
         String response = "";

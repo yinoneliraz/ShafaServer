@@ -119,6 +119,26 @@ public class Constants {
 		System.out.println(ret + "\n");
 		return ret;
 	}
+
+	public static String getInsertMessageQuery(JSONObject params) throws  Exception{
+		String ret="INSERT INTO `menagerie`.`messages`(`fromUserId`,`toUserId`,`fromUserImg`,`toUserImg`," +
+				"`fromUserName`,`toUserName`,`messageStr`,`regardingItem`,`itemImage`, `messageDate`)VALUES('"+params.get("fromUserId")+"','" +
+				params.get("toUserId")+"','"+params.get("fromUserImg")+"','"+params.get("toUserImg")+"','"+params.get("fromUserName")+
+				"','"+params.get("toUserName")+"','"+params.get("messageStr")+"','"+params.get("regardingItem")+
+				"','"+params.get("itemImage")+"', '"+params.get("messageDate")+"');";
+		return ret;
+	}
+
+	public static String getSelectMessagesQuery(JSONObject params) throws  Exception{
+		String ret=	"SELECT `messages`.`messageId`, `messages`.`fromUserId`, `messages`.`toUserId`, " +
+						"`messages`.`fromUserImg`, `messages`.`toUserImg`, `messages`.`fromUserName`, " +
+						"`messages`.`toUserName`, `messages`.`messageStr`, `messages`.`regardingItem` " +
+						", `messages`.`itemImage`, `messages`.`messageDate` " +
+					"FROM `menagerie`.`messages` " +
+					"WHERE `messages`.`toUserId`='"+params.get("userId")+"' OR " +
+					"`messages`.`fromUserId`='"+params.get("userId")+"' ORDER BY `messages`.`messageId`;";
+		return ret;
+	}
 }
 
 

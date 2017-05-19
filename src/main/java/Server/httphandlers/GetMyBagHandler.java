@@ -12,7 +12,7 @@ import MySQL.MySQLQueryExecutor;
 
 import java.io.*;
 
-public class MyBagHandler implements HttpHandler {
+public class GetMyBagHandler implements HttpHandler {
 
     public void handle(HttpExchange he) throws IOException {
         int retVal=0;
@@ -25,7 +25,7 @@ public class MyBagHandler implements HttpHandler {
         try {
             params= Constants.parseQuery(query);
         } catch (Exception e) {
-            System.out.println("ERROR: 		BasketHandler,handle,parseQuery, on query: " + query);
+            System.out.println("ERROR: 		InsertItemToBasketHandler,handle,parseQuery, on query: " + query);
         }
 
         try {
