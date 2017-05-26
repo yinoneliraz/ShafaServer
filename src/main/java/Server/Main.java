@@ -21,6 +21,7 @@ public class Main {
         server.createContext("/myitems",  new GetMyItems());
         server.createContext("/sendMessage",  new InsertMessageHandler());
         server.createContext("/getMessages",  new GetMessagesHandler());
+        server.createContext("/singleItem",  new GetSingleItem());
         server.setExecutor(null);
         server.start();
         System.out.println(server.getAddress());

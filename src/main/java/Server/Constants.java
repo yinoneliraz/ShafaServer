@@ -51,10 +51,10 @@ public class Constants {
 	public static String getInsertQuery(JSONObject params) throws Exception{
 		String ret = "INSERT INTO `items`(`name`, `owner_id`, `category`, `size`, `price`, `description`, "
 				+"`lat`, `lng`,	`image`, `swap`, `from`, `userName`)"
-				+"VALUES ('"+ (String)params.get("name") +"', '"+ (String)params.get("owner_id") +"', '"+ (String)params.get("category") +"', "
-				+ "'"+ (String)params.get("size") +"', '"+ (String)params.get("price") +"', '"+ (String)params.get("description") +"', "
-				+"'"+ (String)params.get("lat") +"', '"+ (String)params.get("lng") +"', '"+ (String)params.get("images") +"', "
-						+ "'"+ (String)params.get("swap") +"', '"+(String)params.get("from") +"', '"+ (String)params.get("userName")+"');";
+				+"VALUES ('"+ params.get("name") +"', '"+ params.get("owner_id") +"', '"+ params.get("category") +"', "
+				+ "'"+ params.get("size") +"', '"+ params.get("price") +"', '"+ params.get("description") +"', "
+				+"'"+ params.get("lat") +"', '"+ params.get("lng") +"', '"+ params.get("images") +"', "
+				+ "'"+ params.get("swap") +"', '"+params.get("from") +"', '"+ params.get("userName")+"');";
 		return ret;
 	}
 	
@@ -130,14 +130,26 @@ public class Constants {
 	}
 
 	public static String getSelectMessagesQuery(JSONObject params) throws  Exception{
+		String fromUser=params.get("fromMessageId")==null ? "0" : params.get("fromMessageId").toString();
 		String ret=	"SELECT `messages`.`messageId`, `messages`.`fromUserId`, `messages`.`toUserId`, " +
 						"`messages`.`fromUserImg`, `messages`.`toUserImg`, `messages`.`fromUserName`, " +
 						"`messages`.`toUserName`, `messages`.`messageStr`, `messages`.`regardingItem` " +
 						", `messages`.`itemImage`, `messages`.`messageDate` " +
 					"FROM `menagerie`.`messages` " +
 					"WHERE `messages`.`toUserId`='"+params.get("userId")+"' OR " +
-					"`messages`.`fromUserId`='"+params.get("userId")+"' ORDER BY `messages`.`messageId`;";
+					"`messages`.`fromUserId`='"+params.get("userId")+"' AND" +
+					" `messages`.`messageId` > " + fromUser +
+					" ORDER BY `messages`.`messageId`;";
 		return ret;
+	}
+
+	public static String getSingleItemQuery(JSONObject params) {
+    	String ret="SELECT `items`.`id`, `items`.`name`, `items`.`owner_id`, " +
+						"`items`.`category`, `items`.`size`, `items`.`price`, " +
+						"`items`.`description`, `items`.`lat`, `items`.`lng`, " +
+						"`items`.`image`, `items`.`swap`, `items`.`from`, " +
+						"`items`.`userName`FROM `menagerie`.`items`WHERE `items`.`id`="+params.get("id")+";";
+    	return ret;
 	}
 }
 

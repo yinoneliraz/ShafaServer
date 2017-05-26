@@ -31,8 +31,8 @@ public class MySQLQueryExecutor {
 			Class.forName("com.mysql.jdbc.Driver");
 			String dbName = "menagerie";
 			String userName = "root";
-			String password = "621adova";
-			String hostname = "shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com";
+			String password = "root";//System.getenv("SHAFA_PASS");
+			String hostname = "localhost";//"shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com";
 			String port = "3306";
 			String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
 			Connection con = DriverManager.getConnection(jdbcUrl);
@@ -107,15 +107,64 @@ public class MySQLQueryExecutor {
 		return jsonArr;
 	}
 
+	public JSONObject getItem(String query){
+		ResultSet rs=null;
+		try {
+			// getting Statement object to execute query
+			System.out.println("Got single item request\nExecuting");
+			stmt = con.createStatement();
+			// executing SELECT query
+			rs = stmt.executeQuery(query);
+			System.out.println("Got results\nParsing");
+
+			JSONObject json=new JSONObject();
+			System.out.println("Finished parsing\nCreating JSON");
+
+			if(!rs.next())
+				return null;
+			try {
+				json.put("id", rs.getString("id"));
+				json.put("name", rs.getString("name"));
+				json.put("image", rs.getString("image"));
+				json.put("size", rs.getString("size"));
+				json.put("description", rs.getString("description"));
+				json.put("userName", rs.getString("userName"));
+				try{
+					json.put("distance", rs.getString("distance"));
+				}
+				catch(java.sql.SQLException ex){
+
+				}
+				json.put("swap",rs.getString("swap"));
+				json.put("price", rs.getString("price"));
+				json.put("from", rs.getString("from"));
+				System.out.println("JSON is ready");
+				return json;
+			} catch (Exception e) {
+				System.out.println("Failure getting single item:");
+				e.printStackTrace();
+			}
+		}
+		catch (SQLException sqlEx) {
+			System.out.println("Failure getting single item:");
+			sqlEx.printStackTrace();
+		}
+		finally {
+			cleanUp(rs,stmt);
+		}
+		return null;
+	}
 
 	public JSONArray getItems(String query){
 		ResultSet rs=null;
 		JSONArray jsonArr=new JSONArray();
 		try { 
 			// getting Statement object to execute query
+			System.out.println("Got items request\nExecuting");
 			stmt = con.createStatement(); 
 			// executing SELECT query 
 			rs = stmt.executeQuery(query);
+			System.out.println("Got results\nParsing");
 
             while(rs.next()){
             	JSONObject json=new JSONObject();
@@ -136,17 +185,21 @@ public class MySQLQueryExecutor {
             		json.put("price", rs.getString("price"));
             		json.put("from", rs.getString("from"));
 					jsonArr.add(json);
+
 				} catch (Exception e) {
+					System.out.println("Failure getting items:");
 					e.printStackTrace();
 				}
             }
 		}
-		catch (SQLException sqlEx) { 
-			sqlEx.printStackTrace(); 
+		catch (SQLException sqlEx) {
+			System.out.println("Failure getting items:");
+			sqlEx.printStackTrace();
 		} 
 		finally {
 			cleanUp(rs,stmt);
-		} 
+		}
+		System.out.println("Finished parsing");
 		return jsonArr;
 	}
 	
