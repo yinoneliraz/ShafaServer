@@ -37,13 +37,18 @@ public class Constants {
 			if(Boolean.parseBoolean(sizeArr[i]))
 				group+="\"" + sizes[i] + "\",";
 		}
+		String type="";
+		String[] types=params.get("type").toString().split(",");
+		for(int i=0;i<types.length;i++){
+			type+="\"" + types[i].trim() + "\",";
+		}
 		group=group.substring(0,group.length()-1)+")";
 		String ret= "SELECT `id`, `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`,`from`, "
 				+"( 6371 * acos( cos( radians('"+lat+"') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
 				+"radians('"+lng+"') ) + sin( radians('"+lat+"') ) * sin( radians( lat ) ) ) ) "
 				+"AS distance FROM items HAVING distance < '"+radius+"' AND price <= "+price+" AND ( (size >= "+ (size- 2) + " AND" +
 				" size <= " + (size+2) + ") OR" +
-				" size IN "+ group +" ) ORDER BY distance LIMIT 0 , 20 ;";
+				" size IN "+ group +" ) AND  `itemType` IN " + type + " ORDER BY distance LIMIT 0 , 20 ;";
 		System.out.println(ret + "\n");
 		return ret;
 	}
