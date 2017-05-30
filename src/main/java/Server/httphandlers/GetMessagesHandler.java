@@ -33,7 +33,7 @@ public class GetMessagesHandler implements HttpHandler {
             query=Constants.getSelectMessagesQuery(postData);
             jsonArr = getConversations(MySQLQueryExecutor.getInstance().getMessages(query));
         } catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
 
         String encoding = "UTF-8";

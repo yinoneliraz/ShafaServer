@@ -22,6 +22,7 @@ public class Main {
         server.createContext("/sendMessage",  new InsertMessageHandler());
         server.createContext("/getMessages",  new GetMessagesHandler());
         server.createContext("/singleItem",  new GetSingleItem());
+        server.createContext("/getMessageCount",  new GetMessageCount());
         server.setExecutor(null);
         server.start();
         System.out.println(server.getAddress());
@@ -30,7 +31,6 @@ public class Main {
 
 
     static class MyHandler implements HttpHandler {
-
         public void handle(HttpExchange t) throws IOException {
             String response = "This is Get response";
             t.sendResponseHeaders(200, response.length());

@@ -30,6 +30,7 @@ public class GetItemsHandler implements HttpHandler {
 			jsonArr = MySQLQueryExecutor.getInstance().getItems(query);
 		} catch (Exception e) {
 			System.out.println("ERROR: SelectHandler,handle,getItems, on query: " + query);
+			e.printStackTrace();
 		}
 
 		String encoding = "UTF-8";

@@ -8,9 +8,6 @@ import org.json.simple.JSONObject;
 running SELECT and INSERT query to retrieve and add data. * @author Javin Paul */ 
 public class MySQLQueryExecutor { 
 	// JDBC URL, username and password of MySQL server
-	private static final String url = "jdbc:mysql://shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com:3306";
-	private static final String user = "root"; 
-	private static final String password = "root";
 	// JDBC variables for opening and managing connection 
 	private static Connection con; 
 	private static Statement stmt; 
@@ -27,19 +24,23 @@ public class MySQLQueryExecutor {
 	}
 
 	private static Connection getRemoteConnection() {
+		Connection con=null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			String dbName = "menagerie";
 			String userName = "root";
-			String password = "root";//System.getenv("SHAFA_PASS");
-			String hostname = "localhost";//"shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com";
+			String password = System.getenv("SHAFA_PASS");//"root";
+			String hostname = "shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com";//"localhost";//
 			String port = "3306";
 			String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
-			Connection con = DriverManager.getConnection(jdbcUrl);
-			return con;
+			con = DriverManager.getConnection(jdbcUrl);
 		}
-		catch (Exception e) { System.out.println("Error"); }
-		return null;
+		catch (Exception e) {
+			System.out.println("Error connecting");
+			System.out.println(e.toString());
+			return null;
+		}
+		return con;
 	}
 
 	private boolean closeConnection(){
@@ -109,6 +110,8 @@ public class MySQLQueryExecutor {
 
 	public JSONObject getItem(String query){
 		ResultSet rs=null;
+		JSONObject json=new JSONObject();
+
 		try {
 			// getting Statement object to execute query
 			System.out.println("Got single item request\nExecuting");
@@ -117,7 +120,6 @@ public class MySQLQueryExecutor {
 			rs = stmt.executeQuery(query);
 			System.out.println("Got results\nParsing");
 
-			JSONObject json=new JSONObject();
 			System.out.println("Finished parsing\nCreating JSON");
 
 			if(!rs.next())
@@ -139,7 +141,6 @@ public class MySQLQueryExecutor {
 				json.put("price", rs.getString("price"));
 				json.put("from", rs.getString("from"));
 				System.out.println("JSON is ready");
-				return json;
 			} catch (Exception e) {
 				System.out.println("Failure getting single item:");
 				e.printStackTrace();
@@ -148,11 +149,12 @@ public class MySQLQueryExecutor {
 		catch (SQLException sqlEx) {
 			System.out.println("Failure getting single item:");
 			sqlEx.printStackTrace();
+			return null;
 		}
 		finally {
 			cleanUp(rs,stmt);
 		}
-		return null;
+		return json;
 	}
 
 	public JSONArray getItems(String query){
@@ -218,5 +220,37 @@ public class MySQLQueryExecutor {
 			cleanUp(null,stmt);
 		} 
 		return rs;
+	}
+
+	public int getMessageCount(String query) {
+		ResultSet rs=null;
+		int ret=-1;
+		try {
+			// getting Statement object to execute query
+			System.out.println("Got count messages request\nExecuting");
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query);
+			System.out.println("Got results\nParsing");
+
+			System.out.println("Finished parsing\nCreating JSON");
+
+			if(!rs.next())
+				return -1;
+			try {
+				ret=rs.getInt("Count");
+			} catch (Exception e) {
+				System.out.println("Failure count messages:");
+				e.printStackTrace();
+			}
+		}
+		catch (SQLException sqlEx) {
+			System.out.println("Failure count messages:");
+			sqlEx.printStackTrace();
+			return -1;
+		}
+		finally {
+			cleanUp(rs,stmt);
+		}
+		return ret;
 	}
 }

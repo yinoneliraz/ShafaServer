@@ -37,13 +37,15 @@ public class Constants {
 			if(Boolean.parseBoolean(sizeArr[i]))
 				group+="\"" + sizes[i] + "\",";
 		}
-		String type="";
+		String type="(";
 		String[] types=params.get("type").toString().split(",");
 		for(int i=0;i<types.length;i++){
 			type+="\"" + types[i].trim() + "\",";
 		}
+		type=type.substring(0,type.length()-1);
+		type+=")";
 		group=group.substring(0,group.length()-1)+")";
-		String ret= "SELECT `id`, `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`,`from`, "
+		String ret= "SELECT `id`, `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`,`from`,`itemType`, "
 				+"( 6371 * acos( cos( radians('"+lat+"') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
 				+"radians('"+lng+"') ) + sin( radians('"+lat+"') ) * sin( radians( lat ) ) ) ) "
 				+"AS distance FROM items HAVING distance < '"+radius+"' AND price <= "+price+" AND ( (size >= "+ (size- 2) + " AND" +
@@ -135,7 +137,7 @@ public class Constants {
 	}
 
 	public static String getSelectMessagesQuery(JSONObject params) throws  Exception{
-		String fromUser=params.get("fromMessageId")==null ? "0" : params.get("fromMessageId").toString();
+		String startingMessage=params.get("fromMessageId")==null ? "0" : params.get("fromMessageId").toString();
 		String ret=	"SELECT `messages`.`messageId`, `messages`.`fromUserId`, `messages`.`toUserId`, " +
 						"`messages`.`fromUserImg`, `messages`.`toUserImg`, `messages`.`fromUserName`, " +
 						"`messages`.`toUserName`, `messages`.`messageStr`, `messages`.`regardingItem` " +
@@ -143,7 +145,7 @@ public class Constants {
 					"FROM `menagerie`.`messages` " +
 					"WHERE `messages`.`toUserId`='"+params.get("userId")+"' OR " +
 					"`messages`.`fromUserId`='"+params.get("userId")+"' AND" +
-					" `messages`.`messageId` > " + fromUser +
+					" `messages`.`messageId` > " + startingMessage +
 					" ORDER BY `messages`.`messageId`;";
 		return ret;
 	}
@@ -155,6 +157,17 @@ public class Constants {
 						"`items`.`image`, `items`.`swap`, `items`.`from`, " +
 						"`items`.`userName`FROM `menagerie`.`items`WHERE `items`.`id`="+params.get("id")+";";
     	return ret;
+	}
+
+	public static String getMessageCountQuery(JSONObject params) {
+		String startingMessage=params.get("fromMessageId")==null ? "0" : params.get("fromMessageId").toString();
+		String ret=	"SELECT COUNT(*) AS Count" +
+				"FROM `menagerie`.`messages` " +
+				"WHERE `messages`.`toUserId`='"+params.get("userId")+"' OR " +
+				"`messages`.`fromUserId`='"+params.get("userId")+"' AND" +
+				" `messages`.`messageId` > " + startingMessage +
+				" ORDER BY `messages`.`messageId`;";
+		return ret;
 	}
 }
 

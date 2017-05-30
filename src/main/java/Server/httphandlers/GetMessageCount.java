@@ -13,38 +13,35 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 /**
- * Created by Yinon on 25/05/2017.
+ * Created by Yinon on 28/05/2017.
  */
-public class GetSingleItem implements HttpHandler {
+public class GetMessageCount implements HttpHandler {
     public void handle(HttpExchange he) throws IOException {
-        JSONObject json = null;
+        int count=0;
         InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
         BufferedReader br = new BufferedReader(isr);
         String query = br.readLine();
-        JSONObject postData=null;
+        JSONObject postData = null;
         try {
-            postData= Constants.parseQuery(query);
+            postData = Constants.parseQuery(query);
         } catch (Exception e) {
-            System.out.println("ERROR: SelectHandler,handle,parseQuery, on query: " + query);
+            System.out.println(e.toString());
         }
 
         try {
-            query=Constants.getSingleItemQuery(postData);
-            json = MySQLQueryExecutor.getInstance().getItem(query);
+            query = Constants.getMessageCountQuery(postData);
+            count = MySQLQueryExecutor.getInstance().getMessageCount(query);
         } catch (Exception e) {
-            System.out.println("ERROR: SelectHandler,handle,getItems, on query: " + query);
             e.printStackTrace();
         }
 
         String encoding = "UTF-8";
-        String ret = json!=null?json.toString():"";
+        String ret = String.valueOf(count);
         he.getResponseHeaders().set("Content-Type", "application/json; charset=" + encoding);
 
         he.sendResponseHeaders(200, ret.toString().getBytes().length);
         OutputStream os = he.getResponseBody();
         os.write(ret.getBytes());
         os.close();
-
     }
-
 }
