@@ -101,18 +101,9 @@ public class Constants {
     }
     
     public static String getBasketGetQuery(JSONObject params) throws Exception{
-		String lat=(String)params.get("lat");
-		String lng=(String)params.get("lng");
-		String radius=(String)params.get("radius");
+		String userID=(String)params.get("userID");
 
-		String ret="SELECT DISTINCT baskets.userId, baskets.itemID,items.id, items.name, items.image,items.userName," +
-				" items.size, items.price, items.lat ,items.lng, " +
-				"items.description ,items.swap,items.from, "
-				+"( 6371 * acos( cos( radians('"+lat+"') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
-				+"radians('"+lng+"') ) + sin( radians('"+lat+"') ) * sin( radians( lat ) ) ) ) "
-				+"AS distance FROM baskets, items " +
-				"WHERE items.id = baskets.itemID" +
-				" HAVING distance < '"+radius+"' ORDER BY distance LIMIT 0 , 20 ;";
+		String ret="SELECT distinct baskets.userID, items.* FROM menagerie.baskets inner join items on baskets.userID="+userID+";";
     	return ret;
     }
 
