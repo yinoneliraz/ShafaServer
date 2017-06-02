@@ -49,22 +49,45 @@ public class GetMessagesHandler implements HttpHandler {
         JSONArray ret=new JSONArray();
         Iterator<Object> it = jsonArr.iterator();
         while(it.hasNext()){
-            JSONArray conv=new JSONArray();
             JSONObject jObj=(JSONObject)it.next();
+            JSONObject info=new JSONObject();
+            info.put("fromUserName",jObj.get("fromUserName"));
+            info.put("fromUserId",jObj.get("fromUserId"));
+            info.put("fromUserImage",jObj.get("fromUserImg"));
+            info.put("toUserName",jObj.get("toUserName"));
+            info.put("toUserId",jObj.get("toUserId"));
+            info.put("toUserImage",jObj.get("toUserImg"));
+            String sessionID=""+
+                    Math.max(Integer.parseInt(jObj.get("fromUserId").toString()),Integer.parseInt(jObj.get("toUserId").toString()))+
+                    "_" +
+                    Math.min(Integer.parseInt(jObj.get("fromUserId").toString()),Integer.parseInt(jObj.get("toUserId").toString()));
+
+            info.put("sessionId",sessionID);
+            info.put("regardingItem",jObj.get("regardingItem"));
             it.remove();
             String aSide=jObj.get("fromUserId").toString();
             String bSide=jObj.get("toUserId").toString();
+            JSONArray msgList=new JSONArray();
             while(it.hasNext()) {
                 JSONObject jconvObj=(JSONObject)it.next();
                 if((jconvObj.get("fromUserId").toString().equals(aSide) &&
                         jconvObj.get("toUserId").toString().equals(bSide)) ||
-                        (jconvObj.get("toUserId").toString().equals(aSide) &&
-                                jconvObj.get("fromUserId").toString().equals(bSide))){
-                    conv.add(jconvObj);
+                       (jconvObj.get("toUserId").toString().equals(aSide) &&
+                        jconvObj.get("fromUserId").toString().equals(bSide))){
+                    JSONObject messageObj=new JSONObject();
+                    messageObj.put("messageId",jconvObj.get("messageId"));
+                    messageObj.put("sender",jconvObj.get("fromUserName"));
+                    messageObj.put("receiver",jconvObj.get("toUserName"));
+                    messageObj.put("date",jconvObj.get("messageDate"));
+                    messageObj.put("text",jconvObj.get("messageStr"));
+                    msgList.add(messageObj);
                     it.remove();
                 }
             }
-            if(conv.size()>0){
+            if(msgList.size()>0){
+                JSONObject conv=new JSONObject();
+                conv.put("info",info);
+                conv.put("messageList",msgList);
                 ret.add(conv);
             }
             it = jsonArr.iterator();
