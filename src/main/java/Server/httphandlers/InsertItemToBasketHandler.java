@@ -27,23 +27,15 @@ public class InsertItemToBasketHandler implements HttpHandler {
 			System.out.println("ERROR: 		InsertItemToBasketHandler,handle,parseQuery, on query: " + query);
 		}
 
-        String response = "";
-
         query= Server.Constants.getBasketInsertQuery(params);
 		System.out.println(query);
 		retVal=MySQLQueryExecutor.getInstance().executeSQL(query);
 		System.out.println("Insert query execution returned : " + retVal);
-        JSONObject retJson=new JSONObject();
-        JSONArray array=new JSONArray();
-        try {
-			retJson.put("return", ""+retVal+"");
-			array.add(retJson);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-        he.sendResponseHeaders(200, response.toString().getBytes().length);
-        OutputStream os = he.getResponseBody();
-        os.write(response.toString().getBytes());
-        os.close();
+
+
+		he.sendResponseHeaders(200, String.valueOf(retVal).getBytes().length);
+		OutputStream os = he.getResponseBody();
+		os.write(String.valueOf(retVal).getBytes());
+		os.close();
 	}
 }

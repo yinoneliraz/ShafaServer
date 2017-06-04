@@ -16,7 +16,8 @@ public class Main {
         server.createContext("/test", new MyHandler());
         server.createContext("/get",  new GetItemsHandler());
         server.createContext("/insert", new InsertItemHandler());
-        server.createContext("/basket",  new InsertItemToBasketHandler());
+        server.createContext("/likeItem",  new InsertItemToBasketHandler());
+        server.createContext("/dislikeItem",  new InsertItemToDislikeHandler());
         server.createContext("/mybag", new GetMyBagHandler());
         server.createContext("/myitems",  new GetMyItems());
         server.createContext("/sendMessage",  new InsertMessageHandler());

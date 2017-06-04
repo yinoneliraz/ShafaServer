@@ -1,33 +1,21 @@
 package Server;
-
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class Constants {
 	public static final int port=4000;
 	public static final String USER_AGENT="Shafa";
-	public static final String INSERT_FORMAT_SQL="INSERT INTO items (name,address"
-										+ ",owner_id,category,size,price,description,lat,lng)"
-										+ "VALUES (`%1$s`,`%2$s`,`%3$d`,`%4$s`,"
-										+ "`%5$s`,`%6$f`,`%7$s`,`%8$f`,`%9$f`);";
-	public static final String INSERT_FORMAT_POST="name=%1$s&address=%2$s&owner_id=%3$d"
-								+ "&category=%4$s&size=%5$s&price=%6$f&description=%7$s&"
-								+ "lat=%8$f&lng=%9$f";
-
 
 	public static String getSelectQuery(JSONObject params) throws Exception{
 		final String[] sizes={"XS","S","M","L","XL","XXL","XXXL"};
 		if (params==null){
 			return "";
 		}
-		String lat=(String)params.get("lat");
-		String lng=(String)params.get("lng");
-		String radius=(String)params.get("radius");
-		String price=(String)params.get("price");
+		String lat=String.valueOf(params.get("lat"));
+		String lng=String.valueOf(params.get("lng"));
+		String radius=String.valueOf(params.get("radius"));
+		String price=String.valueOf(params.get("price"));
 		String[] sizeArr=params.get("shirtsize").toString().split(",");
 		int size=Integer.parseInt(params.get("pantssize").toString());
 		sizeArr[0]=sizeArr[0].replace("[","");
@@ -99,16 +87,27 @@ public class Constants {
     	
     	return ret;
     }
-    
+
+	public static String getDislikeInsertQuery(JSONObject params){
+		String ret="";
+		try {
+			ret = "INSERT INTO `menagerie`.`baskets` (`userID`, `itemID`) VALUES ("+
+					params.get("userID")+", "+params.get("itemID")+");";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
     public static String getBasketGetQuery(JSONObject params) throws Exception{
-		String userID=(String)params.get("userID");
+		String userID=String.valueOf(params.get("userID"));
 
 		String ret="SELECT distinct baskets.userID, items.* FROM menagerie.baskets inner join items on baskets.userID="+userID+";";
     	return ret;
     }
 
 	public static String getItemsGetQuery(JSONObject params) throws Exception{
-		String userId=(String)params.get("userID");
+		String userId=String.valueOf(params.get("userID"));
 
 		String ret="SELECT DISTINCT baskets.userId, items.owner_id , items.id, items.name, items.image,items.userName," +
 				" items.size, items.price, items.lat ,items.lng, " +
