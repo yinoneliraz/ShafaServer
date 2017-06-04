@@ -79,7 +79,7 @@ public class Constants {
     public static String getBasketInsertQuery(JSONObject params){
     	String ret="";
 		try {
-			ret = "INSERT INTO `menagerie`.`baskets` (`userID`, `itemID`) VALUES ("+
+			ret = "INSERT INTO `Shafa`.`baskets` (`userID`, `itemID`) VALUES ("+
 					params.get("userID")+", "+params.get("itemID")+");";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -91,7 +91,7 @@ public class Constants {
 	public static String getDislikeInsertQuery(JSONObject params){
 		String ret="";
 		try {
-			ret = "INSERT INTO `menagerie`.`baskets` (`userID`, `itemID`) VALUES ("+
+			ret = "INSERT INTO `Shafa`.`dislike` (`userID`, `itemID`) VALUES ("+
 					params.get("userID")+", "+params.get("itemID")+");";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -102,7 +102,7 @@ public class Constants {
     public static String getBasketGetQuery(JSONObject params) throws Exception{
 		String userID=String.valueOf(params.get("userID"));
 
-		String ret="SELECT distinct baskets.userID, items.* FROM menagerie.baskets inner join items on baskets.userID="+userID+";";
+		String ret="SELECT distinct baskets.userID, items.* FROM Shafa.baskets inner join items on baskets.userID="+userID+";";
     	return ret;
     }
 
@@ -118,7 +118,7 @@ public class Constants {
 	}
 
 	public static String getInsertMessageQuery(JSONObject params) throws  Exception{
-		String ret="INSERT INTO `menagerie`.`messages`(`fromUserId`,`toUserId`,`fromUserImg`,`toUserImg`," +
+		String ret="INSERT INTO `Shafa`.`messages`(`fromUserId`,`toUserId`,`fromUserImg`,`toUserImg`," +
 				"`fromUserName`,`toUserName`,`messageStr`,`regardingItem`,`itemImage`, `messageDate`)VALUES('"+params.get("fromUserId")+"','" +
 				params.get("toUserId")+"','"+params.get("fromUserImg")+"','"+params.get("toUserImg")+"','"+params.get("fromUserName")+
 				"','"+params.get("toUserName")+"','"+params.get("messageStr")+"','"+params.get("regardingItem")+
@@ -132,7 +132,7 @@ public class Constants {
 						"`messages`.`fromUserImg`, `messages`.`toUserImg`, `messages`.`fromUserName`, " +
 						"`messages`.`toUserName`, `messages`.`messageStr`, `messages`.`regardingItem` " +
 						", `messages`.`itemImage`, `messages`.`messageDate` " +
-					"FROM `menagerie`.`messages` " +
+					"FROM `Shafa`.`messages` " +
 					"WHERE `messages`.`toUserId`='"+params.get("userId")+"' OR " +
 					"`messages`.`fromUserId`='"+params.get("userId")+"' AND" +
 					" `messages`.`messageId` > " + startingMessage +
@@ -145,14 +145,14 @@ public class Constants {
 						"`items`.`category`, `items`.`size`, `items`.`price`, " +
 						"`items`.`description`, `items`.`lat`, `items`.`lng`, " +
 						"`items`.`image`, `items`.`swap`, `items`.`from`, " +
-						"`items`.`userName`FROM `menagerie`.`items`WHERE `items`.`id`="+params.get("id")+";";
+						"`items`.`userName`FROM `Shafa`.`items`WHERE `items`.`id`="+params.get("id")+";";
     	return ret;
 	}
 
 	public static String getMessageCountQuery(JSONObject params) {
 		String startingMessage=params.get("fromMessageId")==null ? "0" : params.get("fromMessageId").toString();
 		String ret=	"SELECT COUNT(*) AS Count" +
-				"FROM `menagerie`.`messages` " +
+				"FROM `Shafa`.`messages` " +
 				"WHERE `messages`.`toUserId`='"+params.get("userId")+"' OR " +
 				"`messages`.`fromUserId`='"+params.get("userId")+"' AND" +
 				" `messages`.`messageId` > " + startingMessage +

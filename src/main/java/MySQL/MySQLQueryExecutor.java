@@ -27,7 +27,7 @@ public class MySQLQueryExecutor {
 		Connection con=null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			String dbName = "menagerie";
+			String dbName = "Shafa";
 			String userName = "root";
 			String password = System.getenv("SHAFA_PASS");//"root";
 			String hostname = "shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com";//"localhost";//
