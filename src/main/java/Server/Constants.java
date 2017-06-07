@@ -16,6 +16,7 @@ public class Constants {
 		String lng=String.valueOf(params.get("lng"));
 		String radius=String.valueOf(params.get("radius"));
 		String price=String.valueOf(params.get("price"));
+		String userID=String.valueOf(params.get("userID"));
 		String[] sizeArr=params.get("shirtsize").toString().split(",");
 		int size=Integer.parseInt(params.get("pantssize").toString());
 		sizeArr[0]=sizeArr[0].replace("[","");
@@ -36,15 +37,16 @@ public class Constants {
 		String page=String.valueOf(params.get("page"));
 		int startingItem=Integer.valueOf(page)*10;
 		int endingItem=startingItem+10;
-		String ret= "SELECT `id`, `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`,`from`,`itemType`, "
+		String ret= "SELECT `id`, `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`,`from`,`itemType`, `isSold`, "
 				+"( 6371 * acos( cos( radians('"+lat+"') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
 				+"radians('"+lng+"') ) + sin( radians('"+lat+"') ) * sin( radians( lat ) ) ) ) "
 				+"AS distance FROM items " +
-				" left join (select `dislike`.`itemID` dItemID, `dislike`. `userID` dUserID, `baskets`.`itemID` bItemID,`baskets`.`userID` bUserID from dislike cross join baskets) t1\n" +
+				" left join (select `dislike`.`itemID` dItemID, `dislike`. `userID` dUserID, `baskets`.`itemID` bItemID,`baskets`.`userID` bUserID from dislike cross join baskets" +
+				" where `dislike`. `userID`='"+userID+"' or `baskets`. `userID`='"+userID+"') t1\n" +
 				" on dItemID=`id` or bItemID=`id` where dItemID is null and bItemID is null "+
 				"HAVING distance < '"+radius+"' AND price <= "+price+" AND ( (size >= "+ (size- 2) + " AND" +
 				" size <= " + (size+2) + ") OR" +
-				" size IN "+ group +" ) AND  `itemType` IN " + type
+				" size IN "+ group +" ) AND isSold=0 AND `itemType` IN " + type
 				+ " ORDER BY distance LIMIT "+startingItem+" , "+endingItem+" ;";
 		System.out.println(ret + "\n");
 		return ret;
@@ -94,6 +96,13 @@ public class Constants {
     	
     	return ret;
     }
+
+	public static String getUpdateItemToSell(JSONObject params){
+		String ret="";
+		ret = "UPDATE `Shafa`.`items` SET `isSold`='1' WHERE `id`='"+params.get("itemID")+"';";
+		return ret;
+	}
+
 
 	public static String getDislikeInsertQuery(JSONObject params){
 		String ret="";

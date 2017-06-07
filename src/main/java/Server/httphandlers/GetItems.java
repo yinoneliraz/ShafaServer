@@ -11,7 +11,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import MySQL.MySQLQueryExecutor;
 
-public class GetItemsHandler implements HttpHandler {
+public class GetItems implements HttpHandler {
 
 	public void handle(HttpExchange he) throws IOException {
 		JSONArray jsonArr = null;

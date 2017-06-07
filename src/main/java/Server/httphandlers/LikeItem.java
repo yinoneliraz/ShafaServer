@@ -13,7 +13,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import MySQL.MySQLQueryExecutor;
 
-public class InsertItemToBasketHandler implements HttpHandler {
+public class LikeItem implements HttpHandler {
 
 	public void handle(HttpExchange he) throws IOException {
 		int retVal=0;
@@ -24,7 +24,7 @@ public class InsertItemToBasketHandler implements HttpHandler {
         try {
         	params= Server.Constants.parseQuery(query);
 		} catch (Exception e) {
-			System.out.println("ERROR: 		InsertItemToBasketHandler,handle,parseQuery, on query: " + query);
+			System.out.println("ERROR: 		LikeItem,handle,parseQuery, on query: " + query);
 		}
 
         query= Server.Constants.getBasketInsertQuery(params);

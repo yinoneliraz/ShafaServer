@@ -16,7 +16,7 @@ import java.util.Iterator;
 /**
  * Created by Yinon on 19/05/2017.
  */
-public class GetMessagesHandler implements HttpHandler {
+public class GetMessages implements HttpHandler {
     public void handle(HttpExchange he) throws IOException {
         JSONArray jsonArr = null;
         InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");

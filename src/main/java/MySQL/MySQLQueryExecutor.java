@@ -15,7 +15,7 @@ public class MySQLQueryExecutor {
 	private static Statement stmt; 
 	static MySQLQueryExecutor instance=null;
 	private MySQLQueryExecutor(){
-		con = getRemoteConnection();
+		;
 	}
 	
 	public static MySQLQueryExecutor getInstance(){
@@ -68,6 +68,7 @@ public class MySQLQueryExecutor {
 	}
 
 	public JSONArray getMessages(String query){
+		con = getRemoteConnection();
 		ResultSet rs;
 		JSONArray jsonArr=new JSONArray();
 		try {
@@ -99,11 +100,13 @@ public class MySQLQueryExecutor {
 		}
 		finally {
 			cleanUp(null,stmt);
+			closeConnection();
 		}
 		return jsonArr;
 	}
 
 	public JSONObject getItem(String query){
+		con = getRemoteConnection();
 		ResultSet rs=null;
 		JSONObject json=new JSONObject();
 
@@ -147,13 +150,14 @@ public class MySQLQueryExecutor {
 			return null;
 		}
 		finally {
-			closeConnection();
 			cleanUp(rs,stmt);
+			closeConnection();
 		}
 		return json;
 	}
 
 	public JSONArray getItems(String query){
+		con = getRemoteConnection();
 		ResultSet rs=null;
 		JSONArray jsonArr=new JSONArray();
 		try { 
@@ -204,7 +208,8 @@ public class MySQLQueryExecutor {
 	
 	public int executeSQL(String sql){
 		int rs=0;
-		try { 
+		con = getRemoteConnection();
+		try {
 			// getting Statement object to execute query
 			stmt = con.createStatement(); 
 			// executing SELECT query 
@@ -221,6 +226,7 @@ public class MySQLQueryExecutor {
 	}
 
 	public int getMessageCount(String query) {
+		con = getRemoteConnection();
 		ResultSet rs=null;
 		int ret=-1;
 		try {

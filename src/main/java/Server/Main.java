@@ -14,16 +14,17 @@ public class Main {
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(4000), 0);
         server.createContext("/test", new MyHandler());
-        server.createContext("/get",  new GetItemsHandler());
-        server.createContext("/insert", new InsertItemHandler());
-        server.createContext("/likeItem",  new InsertItemToBasketHandler());
-        server.createContext("/dislikeItem",  new InsertItemToDislikeHandler());
-        server.createContext("/mybag", new GetMyBagHandler());
+        server.createContext("/get",  new GetItems());
+        server.createContext("/insert", new InsertNewItem());
+        server.createContext("/likeItem",  new LikeItem());
+        server.createContext("/dislikeItem",  new DislikeItem());
+        server.createContext("/mybag", new GetMyBag());
         server.createContext("/myitems",  new GetMyItems());
-        server.createContext("/sendMessage",  new InsertMessageHandler());
-        server.createContext("/getMessages",  new GetMessagesHandler());
+        server.createContext("/sendMessage",  new SendMessage());
+        server.createContext("/getMessages",  new GetMessages());
         server.createContext("/singleItem",  new GetSingleItem());
         server.createContext("/getMessageCount",  new GetMessageCount());
+        server.createContext("/sellItem",  new SellItem());
         server.setExecutor(null);
         server.start();
         System.out.println(server.getAddress());

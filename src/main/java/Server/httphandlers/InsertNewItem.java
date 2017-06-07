@@ -14,7 +14,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import MySQL.MySQLQueryExecutor;
 
-public class InsertItemHandler implements HttpHandler {
+public class InsertNewItem implements HttpHandler {
 
 	public void handle(HttpExchange he) throws IOException {
 		int retVal=0;
@@ -25,7 +25,7 @@ public class InsertItemHandler implements HttpHandler {
         try {
         	params= Constants.parseQuery(query);
 		} catch (Exception e) {
-			System.out.println("ERROR: 		InsertItemHandler,handle,parseQuery, on query: " + query);
+			System.out.println("ERROR: 		InsertNewItem,handle,parseQuery, on query: " + query);
 		}
 
         String response = "";
@@ -36,7 +36,7 @@ public class InsertItemHandler implements HttpHandler {
 			retVal=MySQLQueryExecutor.getInstance().executeSQL(query);
 			System.out.println("Insert query execution returned : " + retVal);
 		} catch (Exception e) {
-			System.out.println("ERROR: 		InsertItemHandler,handle,getInsertQuery, on query: " + query);
+			System.out.println("ERROR: 		InsertNewItem,handle,getInsertQuery, on query: " + query);
 		}
         JSONObject retJson=new JSONObject();
         JSONArray array=new JSONArray();
