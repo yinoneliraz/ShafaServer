@@ -33,12 +33,19 @@ public class Constants {
 		type=type.substring(0,type.length()-1);
 		type+=")";
 		group=group.substring(0,group.length()-1)+")";
+		String page=String.valueOf(params.get("page"));
+		int startingItem=Integer.valueOf(page)*10;
+		int endingItem=startingItem+10;
 		String ret= "SELECT `id`, `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`,`from`,`itemType`, "
 				+"( 6371 * acos( cos( radians('"+lat+"') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
 				+"radians('"+lng+"') ) + sin( radians('"+lat+"') ) * sin( radians( lat ) ) ) ) "
-				+"AS distance FROM items HAVING distance < '"+radius+"' AND price <= "+price+" AND ( (size >= "+ (size- 2) + " AND" +
+				+"AS distance FROM items " +
+				" left join (select `dislike`.`itemID` dItemID, `dislike`. `userID` dUserID, `baskets`.`itemID` bItemID,`baskets`.`userID` bUserID from dislike cross join baskets) t1\n" +
+				" on dItemID=`id` or bItemID=`id` where dItemID is null and bItemID is null "+
+				"HAVING distance < '"+radius+"' AND price <= "+price+" AND ( (size >= "+ (size- 2) + " AND" +
 				" size <= " + (size+2) + ") OR" +
-				" size IN "+ group +" ) AND  `itemType` IN " + type + " ORDER BY distance LIMIT 0 , 20 ;";
+				" size IN "+ group +" ) AND  `itemType` IN " + type
+				+ " ORDER BY distance LIMIT "+startingItem+" , "+endingItem+" ;";
 		System.out.println(ret + "\n");
 		return ret;
 	}
@@ -109,10 +116,8 @@ public class Constants {
 	public static String getItemsGetQuery(JSONObject params) throws Exception{
 		String userId=String.valueOf(params.get("userID"));
 
-		String ret="SELECT DISTINCT baskets.userId, items.owner_id , items.id, items.name, items.image,items.userName," +
-				" items.size, items.price, items.lat ,items.lng, " +
-				"items.description ,items.swap,items.from FROM baskets, items " +
-				"WHERE items.owner_id = " + userId + " ;";
+		String ret="SELECT DISTINCT * FROM Shafa.items " +
+				"WHERE owner_id = " + userId + " ;";
 		System.out.println(ret + "\n");
 		return ret;
 	}

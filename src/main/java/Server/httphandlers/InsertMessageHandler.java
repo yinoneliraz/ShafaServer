@@ -29,8 +29,6 @@ public class InsertMessageHandler implements HttpHandler {
         } catch (Exception e) {
             System.out.println("ERROR: 		InsertMessageHandler,handle,parseQuery, on query: " + query);
         }
-        String response = "";
-
         try {
             query=Constants.getInsertMessageQuery(params);
             System.out.println(query);
@@ -39,17 +37,9 @@ public class InsertMessageHandler implements HttpHandler {
         } catch (Exception e) {
             System.out.println("ERROR: 		InsertMessageHandler,handle,getInsertQuery, on query: " + query);
         }
-        JSONObject retJson=new JSONObject();
-        JSONArray array=new JSONArray();
-        try {
-            retJson.put("return", ""+retVal+"");
-            array.add(retJson);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        he.sendResponseHeaders(200, response.toString().getBytes().length);
+        he.sendResponseHeaders(200, String.valueOf(retVal).getBytes().length);
         OutputStream os = he.getResponseBody();
-        os.write(response.toString().getBytes());
+        os.write(String.valueOf(retVal).getBytes());
         os.close();
 
     }

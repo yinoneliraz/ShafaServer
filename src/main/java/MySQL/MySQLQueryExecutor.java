@@ -1,5 +1,7 @@
 package MySQL;
 
+import java.beans.PropertyVetoException;
+import java.io.IOException;
 import java.sql.*;
 
 import org.json.simple.JSONArray;
@@ -24,23 +26,16 @@ public class MySQLQueryExecutor {
 	}
 
 	private static Connection getRemoteConnection() {
-		Connection con=null;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			String dbName = "Shafa";
-			String userName = "root";
-			String password = System.getenv("SHAFA_PASS");//"root";
-			String hostname = "shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com";//"localhost";//
-			String port = "3306";
-			String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
-			con = DriverManager.getConnection(jdbcUrl);
+			return ConnectionManager.getInstance().getConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
 		}
-		catch (Exception e) {
-			System.out.println("Error connecting");
-			System.out.println(e.toString());
-			return null;
-		}
-		return con;
+		return null;
 	}
 
 	private boolean closeConnection(){
@@ -152,6 +147,7 @@ public class MySQLQueryExecutor {
 			return null;
 		}
 		finally {
+			closeConnection();
 			cleanUp(rs,stmt);
 		}
 		return json;
@@ -200,6 +196,7 @@ public class MySQLQueryExecutor {
 		} 
 		finally {
 			cleanUp(rs,stmt);
+			closeConnection();
 		}
 		System.out.println("Finished parsing");
 		return jsonArr;
@@ -218,6 +215,7 @@ public class MySQLQueryExecutor {
 		}
 		finally {
 			cleanUp(null,stmt);
+			closeConnection();
 		} 
 		return rs;
 	}
@@ -250,6 +248,7 @@ public class MySQLQueryExecutor {
 		}
 		finally {
 			cleanUp(rs,stmt);
+			closeConnection();
 		}
 		return ret;
 	}
