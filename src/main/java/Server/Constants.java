@@ -37,19 +37,46 @@ public class Constants {
 		String page=String.valueOf(params.get("page"));
 		int startingItem=Integer.valueOf(page)*10;
 		int endingItem=startingItem+10;
-		String ret= "SELECT `id`, `name`, `image`,`userName`, `size`, `price`, `lat` ,`lng`, `description` ,`swap`,`from`,`itemType`, `isSold`, "
-				+"( 6371 * acos( cos( radians('"+lat+"') ) * cos( radians( lat ) ) * cos( radians( lng ) - "
-				+"radians('"+lng+"') ) + sin( radians('"+lat+"') ) * sin( radians( lat ) ) ) ) "
-				+"AS distance FROM items " +
-				" left join (select `dislike`.`itemID` dItemID, `dislike`. `userID` dUserID, `baskets`.`itemID` bItemID,`baskets`.`userID` bUserID from dislike cross join baskets" +
-				" where `dislike`. `userID`='"+userID+"' or `baskets`. `userID`='"+userID+"') t1\n" +
-				" on dItemID=`id` or bItemID=`id` where dItemID is null and bItemID is null "+
-				"HAVING distance < '"+radius+"' AND price <= "+price+" AND ( (size >= "+ (size- 2) + " AND" +
-				" size <= " + (size+2) + ") OR" +
-				" size IN "+ group +" ) AND isSold=0 AND `itemType` IN " + type
-				+ " ORDER BY distance LIMIT "+startingItem+" , "+endingItem+" ;";
-		System.out.println(ret + "\n");
-		return ret;
+		String ret="SELECT "+
+				"    `id`,"+
+				"    `name`,"+
+				"    `image`,"+
+				"    `userName`,"+
+				"    `size`,"+
+				"    `price`,"+
+				"    `lat`,"+
+				"    `lng`,"+
+				"    `description`,"+
+				"    `swap`,"+
+				"    `from`,"+
+				"    `itemType`,"+
+				"    `isSold`,"+
+				"    (6371 * ACOS(COS(RADIANS('"+lat+"')) * COS(RADIANS(lat)) * COS(RADIANS(lng) - RADIANS('"+lng+"')) + SIN(RADIANS('"+lat+"')) * SIN(RADIANS(lat)))) AS distance"+
+				" FROM"+
+				"    items"+
+				"        LEFT JOIN"+
+				"    ((SELECT "+
+				"        `dislike`.`itemID` dItemID, `dislike`.`userID` dUserID"+
+				"    FROM"+
+				"        dislike"+
+				"    WHERE"+
+				"        `dislike`.`userID` = '" + userID + "') UNION ALL (SELECT "+
+				"        `baskets`.`itemID` bItemID, `baskets`.`userID` bUserID"+
+				"    FROM"+
+				"        baskets"+
+				"    WHERE"+
+				"        `baskets`.`userID` = '" + userID + "')) t1 ON dItemID = `id`"+
+				" WHERE"+
+				"    dItemID IS NULL"+
+				" HAVING distance < '" + radius + "' AND price <= " + price + ""+
+				"    AND ((size >= " + (size- 2) + " AND size <= " + (size+2) + ")"+
+				"    OR size IN " + group + ")"+
+				"    AND isSold = 0"+
+				"    AND `itemType` IN "+ type +""+
+				" ORDER BY distance" +
+				" LIMIT " + startingItem + " , " + endingItem + " ;";
+		System.out.println(ret.replace("\t"," ") + "\n");
+		return ret.replace("\t"," ");
 	}
 	
 	public static String getInsertQuery(JSONObject params) throws Exception{
