@@ -1,60 +1,58 @@
 package Server;
 import java.net.URLDecoder;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class Constants {
-	public static final int port=4000;
 	public static final String USER_AGENT="Shafa";
 
 	public static String getSelectQuery(JSONObject params) throws Exception{
-		final String[] sizes={"XS","S","M","L","XL","XXL","XXXL"};
-		if (params==null){
-			return "";
-		}
+		JSONParser parser = new JSONParser();
 		String lat=String.valueOf(params.get("lat"));
 		String lng=String.valueOf(params.get("lng"));
+		String topPrice=String.valueOf(params.get("topPrice"));
+		String bottomPrice=String.valueOf(params.get("bottomPrice"));
+		String unionQuery="";
+		String[] titles={"jeans", "accessories", "coats", "swimsuits", "overalls", "shirts", "pants", "dresses", "skirts", "shoes"};
+		JSONArray sizeArray=new JSONArray();
+		for(String title:titles){
+			sizeArray.add(parser.parse(String.valueOf(params.get(title))));
+		}
+		for(int i=0;i<sizeArray.size()-1;i++){
+			JSONArray temp=(JSONArray)sizeArray.get(i);
+			if(temp.size()==0)
+				continue;
+			String sizeStr="(";
+			for(Object part:temp){
+				sizeStr+="\""+String.valueOf(part)+"\",";
+			}
+			sizeStr=sizeStr.substring(0,sizeStr.length()-1)+")";
+			unionQuery+="SELECT  "+
+					"    `items`.*, "+
+					"    (6371 * ACOS(COS(RADIANS('"+lat+"')) * COS(RADIANS(lat)) * COS(RADIANS(lng) - RADIANS('"+lng+"')) + SIN(RADIANS('"+lat+"')) * SIN(RADIANS(lat)))) AS distance "+
+					"FROM "+
+					"    items "+
+					"WHERE "+
+					"    `items`.`itemType` = '"+titles[i]+"' ";
+			if(!titles[i].equals("accessories"))
+				unionQuery+="        AND `items`.size IN "+ sizeStr+"  ";
+			if(i<sizeArray.size()-1){
+				unionQuery+="UNION ALL ";
+			}
+		}
+		if(unionQuery.endsWith("UNION ALL ")){
+			unionQuery=unionQuery.substring(0,unionQuery.lastIndexOf("UNION ALL "));
+		}
 		String radius=String.valueOf(params.get("radius"));
-		String price=String.valueOf(params.get("price"));
 		String userID=String.valueOf(params.get("userID"));
-		String[] sizeArr=params.get("shirtsize").toString().split(",");
-		int size=Integer.parseInt(params.get("pantssize").toString());
-		sizeArr[0]=sizeArr[0].replace("[","");
-		sizeArr[0]=sizeArr[sizeArr.length-1].replace("]","");
-		String group="(";
-		for(int i=0;i<7;i++){
-			if(Boolean.parseBoolean(sizeArr[i]))
-				group+="\"" + sizes[i] + "\",";
-		}
-		String type="(";
-		String[] types=params.get("type").toString().split(",");
-		for(int i=0;i<types.length;i++){
-			type+="\"" + types[i].trim() + "\",";
-		}
-		type=type.substring(0,type.length()-1);
-		type+=")";
-		group=group.substring(0,group.length()-1)+")";
 		String page=String.valueOf(params.get("page"));
 		int startingItem=Integer.valueOf(page)*10;
 		int endingItem=startingItem+10;
-		String ret="SELECT "+
-				"    `id`,"+
-				"    `name`,"+
-				"    `image`,"+
-				"    `userName`,"+
-				"    `size`,"+
-				"    `price`,"+
-				"    `lat`,"+
-				"    `lng`,"+
-				"    `description`,"+
-				"    `swap`,"+
-				"    `from`,"+
-				"    `itemType`,"+
-				"    `isSold`,"+
-				"    (6371 * ACOS(COS(RADIANS('"+lat+"')) * COS(RADIANS(lat)) * COS(RADIANS(lng) - RADIANS('"+lng+"')) + SIN(RADIANS('"+lat+"')) * SIN(RADIANS(lat)))) AS distance"+
-				" FROM"+
-				"    items"+
-				"        LEFT JOIN"+
+		String ret="SELECT *" +
+				"FROM ("+unionQuery+
+				")t2        LEFT JOIN"+
 				"    ((SELECT "+
 				"        `dislike`.`itemID` dItemID, `dislike`.`userID` dUserID"+
 				"    FROM"+
@@ -68,11 +66,8 @@ public class Constants {
 				"        `baskets`.`userID` = '" + userID + "')) t1 ON dItemID = `id`"+
 				" WHERE"+
 				"    dItemID IS NULL"+
-				" HAVING distance < '" + radius + "' AND price <= " + price + ""+
-				"    AND ((size >= " + (size- 2) + " AND size <= " + (size+2) + ")"+
-				"    OR size IN " + group + ")"+
+				" HAVING distance < '" + radius + "' AND price <= " + topPrice + " AND price>=" + bottomPrice +
 				"    AND isSold = 0"+
-				"    AND `itemType` IN "+ type +""+
 				" ORDER BY distance" +
 				" LIMIT " + startingItem + " , " + endingItem + " ;";
 		System.out.println(ret.replace("\t"," ") + "\n");
@@ -125,9 +120,10 @@ public class Constants {
     }
 
 	public static String getUpdateItemToSell(JSONObject params){
-		String ret="";
-		ret = "UPDATE `Shafa`.`items` SET `isSold`='1' WHERE `id`='"+params.get("itemID")+"';";
-		return ret;
+		String ret1="",ret2="";
+		ret1 = "UPDATE `Shafa`.`items` SET `isSold`='1' WHERE `id`='"+params.get("itemID")+"';";
+		ret2 = "INSERT INTO `Shafa`.`sold` (`itemID`, `soldToID`) VALUES ("+params.get("itemID")+", "+params.get("userID")+");\n";
+		return ret1+"\n"+ret2;
 	}
 
 
@@ -144,9 +140,18 @@ public class Constants {
 
     public static String getBasketGetQuery(JSONObject params) throws Exception{
 		String userID=String.valueOf(params.get("userID"));
+		String lat=String.valueOf(params.get("lat"));
+		String lng=String.valueOf(params.get("lng"));
 
-		String ret="SELECT distinct baskets.userID, items.* FROM Shafa.baskets inner join items on baskets.userID="+userID+";";
-    	return ret;
+		String ret="SELECT DISTINCT " +
+				"    baskets.userID, " +
+				"    items.*, " +
+				"    (6371 * ACOS(COS(RADIANS('"+lat+"')) * COS(RADIANS(lat)) * COS(RADIANS(lng) - RADIANS('"+lng+"')) + SIN(RADIANS('"+lat+"')) * SIN(RADIANS(lat)))) AS distance "+
+				"FROM " +
+				"    Shafa.baskets " +
+				"        INNER JOIN " +
+				"    items ON baskets.userID = "+userID+"; ";
+		return ret;
     }
 
 	public static String getItemsGetQuery(JSONObject params) throws Exception{
