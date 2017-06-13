@@ -15,12 +15,23 @@ public class Constants {
 		String topPrice=String.valueOf(params.get("topPrice"));
 		String bottomPrice=String.valueOf(params.get("bottomPrice"));
 		String unionQuery="";
-		String[] titles={"jeans", "accessories", "coats", "swimsuits", "overalls", "shirts", "pants", "dresses", "skirts", "shoes"};
+		String[] titles={"jeans", "coats", "swimsuits", "overalls", "shirts", "pants", "dresses", "skirts", "shoes"};
 		JSONArray sizeArray=new JSONArray();
 		for(String title:titles){
 			sizeArray.add(parser.parse(String.valueOf(params.get(title))));
 		}
-		for(int i=0;i<sizeArray.size()-1;i++){
+		boolean showAccessories=Boolean.valueOf(String.valueOf(params.get("accessories")));
+		if(showAccessories){
+            unionQuery="SELECT  "+
+                    "    `items`.*, "+
+                    "    (6371 * ACOS(COS(RADIANS('"+lat+"')) * COS(RADIANS(lat)) * COS(RADIANS(lng) - RADIANS('"+lng+"')) + SIN(RADIANS('"+lat+"')) * SIN(RADIANS(lat)))) AS distance "+
+                    "FROM "+
+                    "    items "+
+                    "WHERE "+
+                    "    `items`.`itemType` = 'accessories' ";
+            unionQuery+="UNION ALL ";
+        }
+		for(int i=0;i<sizeArray.size();i++){
 			JSONArray temp=(JSONArray)sizeArray.get(i);
 			if(temp.size()==0)
 				continue;
@@ -51,7 +62,7 @@ public class Constants {
 		int startingItem=Integer.valueOf(page)*10;
 		int endingItem=startingItem+10;
 		String ret="SELECT *" +
-				"FROM ("+unionQuery+
+				" FROM ("+unionQuery+
 				")t2        LEFT JOIN"+
 				"    ((SELECT "+
 				"        `dislike`.`itemID` dItemID, `dislike`.`userID` dUserID"+
@@ -75,36 +86,40 @@ public class Constants {
 	}
 	
 	public static String getInsertQuery(JSONObject params) throws Exception{
-		String ret = "INSERT INTO `items`(`name`, `owner_id`, `category`, `size`, `price`, `description`, "
-				+"`lat`, `lng`,	`image`, `swap`, `from`, `userName`)"
-				+"VALUES ('"+ params.get("name") +"', '"+ params.get("owner_id") +"', '"+ params.get("category") +"', "
-				+ "'"+ params.get("size") +"', '"+ params.get("price") +"', '"+ params.get("description") +"', "
-				+"'"+ params.get("lat") +"', '"+ params.get("lng") +"', '"+ params.get("images") +"', "
-				+ "'"+ params.get("swap") +"', '"+params.get("from") +"', '"+ params.get("userName")+"');";
+		String ret = "INSERT INTO `items`(`name`,`owner_id`,`size`,`price`,`description`,`lat`,`lng`," +
+				"`image`,`from`,`userName`,`itemType`) "
+				+"VALUES ('"+ params.get("name") +"', '"+ params.get("owner_id") +"', "
+				+ "'"+ params.get("size").toString().replace("[","").replace("]","")
+				+"', '"+ params.get("price") +"', '"+ params.get("description") +"', "
+				+"'"+ params.get("lat") +"', '"+ params.get("lng") +"', '"+ params.get("image") +"', "
+				+ "'"+params.get("from") +"', '"+ params.get("userName")+"', '"+
+				params.get("itemType")+"');";
 		return ret;
 	}
 	
     public static JSONObject parseQuery(String query) throws Exception {
     	JSONObject ret = null;
-    	if (query != null) {
-    		String pairs[] = query.split("[&]");
-    		for (String pair : pairs) {
-    			String param[] = pair.split("[=]");
-    			String key = null;
-    			if (param.length > 0) {
-    				key = URLDecoder.decode(param[0], 
-    					System.getProperty("file.encoding"));
-    			}
-    			
-    			if(key!= null){
-					JSONParser parser = new JSONParser();
-					Object obj = parser.parse(key);
-    				ret=(JSONObject) obj;
-    				return ret;
-    			}
-    		}
-    	}
-		return ret;
+		JSONParser parser1 = new JSONParser();
+		return (JSONObject)parser1.parse(query);
+//    	if (query != null) {
+//    		String pairs[] = query.split("[&]");
+//    		for (String pair : pairs) {
+//    			String param[] = pair.split("[=]");
+//    			String key = null;
+//    			if (param.length > 0) {
+//    				key = URLDecoder.decode(param[0],
+//    					System.getProperty("file.encoding"));
+//    			}
+//
+//    			if(key!= null){
+//					JSONParser parser = new JSONParser();
+//					Object obj = parser.parse(key);
+//    				ret=(JSONObject) obj;
+//    				return ret;
+//    			}
+//    		}
+//    	}
+//		return ret;
     }
     
     public static String getBasketInsertQuery(JSONObject params){

@@ -1,6 +1,9 @@
 package Server.httphandlers;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import Server.Constants;
 import org.json.simple.JSONArray;
@@ -15,6 +18,10 @@ public class GetItems implements HttpHandler {
 
 	public void handle(HttpExchange he) throws IOException {
 		JSONArray jsonArr = null;
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		System.out.println(dateFormat.format(date) + ":Get items, started handling");
+
 		InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
 		BufferedReader br = new BufferedReader(isr);
 		String query = br.readLine();
@@ -22,14 +29,15 @@ public class GetItems implements HttpHandler {
 		try {
 			postData= Constants.parseQuery(query);
 		} catch (Exception e) {
-			System.out.println("ERROR: SelectHandler,handle,parseQuery, on query: " + query);
+			System.out.println(dateFormat.format(date) + ":Error");
+			e.printStackTrace();
 		}
 
 		try {
 			query=Constants.getSelectQuery(postData);
 			jsonArr = MySQLQueryExecutor.getInstance().getItems(query);
 		} catch (Exception e) {
-			System.out.println("ERROR: SelectHandler,handle,getItems, on query: " + query);
+			System.out.println(dateFormat.format(date) + ":Error");
 			e.printStackTrace();
 		}
 
@@ -41,6 +49,6 @@ public class GetItems implements HttpHandler {
 		OutputStream os = he.getResponseBody();
 		os.write(ret.getBytes());
 		os.close();
-
+		System.out.println(dateFormat.format(date) + ":Get items, finished handling");
 	}
 }

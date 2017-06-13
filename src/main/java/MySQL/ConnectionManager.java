@@ -23,7 +23,7 @@ public class ConnectionManager {
         ds.setPassword(password);
         String hostname = "shafa1.ce1sh3jg1tvc.eu-west-1.rds.amazonaws.com";//"localhost";//
         String port = "3306";
-        String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName;
+        String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName+"?useUnicode=true&characterEncoding=utf8";
         ds.setUrl(jdbcUrl);
 
         // the settings below are optional -- dbcp can work with defaults

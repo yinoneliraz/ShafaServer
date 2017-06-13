@@ -11,6 +11,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Yinon on 19/05/2017.
@@ -19,6 +22,10 @@ public class SendMessage implements HttpHandler {
 
     public void handle(HttpExchange he) throws IOException {
         int retVal=0;
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        System.out.println(dateFormat.format(date) + ":Send message, started handling");
+
         InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
         JSONObject params=new JSONObject();
         BufferedReader br = new BufferedReader(isr);
@@ -27,7 +34,8 @@ public class SendMessage implements HttpHandler {
             params= Constants.parseQuery(query);
 
         } catch (Exception e) {
-            System.out.println("ERROR: 		SendMessage,handle,parseQuery, on query: " + query);
+            System.out.println(dateFormat.format(date) + ":Error");
+            e.printStackTrace();
         }
         try {
             query=Constants.getInsertMessageQuery(params);
@@ -35,12 +43,19 @@ public class SendMessage implements HttpHandler {
             retVal= MySQLQueryExecutor.getInstance().executeSQL(query);
             System.out.println("Insert query execution returned : " + retVal);
         } catch (Exception e) {
-            System.out.println("ERROR: 		SendMessage,handle,getInsertQuery, on query: " + query);
+            System.out.println(dateFormat.format(date) + ":Error");
+            e.printStackTrace();
         }
-        he.sendResponseHeaders(200, String.valueOf(retVal).getBytes().length);
+        String encoding = "UTF-8";
+        he.getResponseHeaders().set("Content-Type", "application/json; charset=" + encoding);
+        JSONObject retJson=new JSONObject();
+        retJson.put("output",retVal==1 ? "success" : "fail");
+
+        he.sendResponseHeaders(200, retJson.toString().getBytes().length);
         OutputStream os = he.getResponseBody();
-        os.write(String.valueOf(retVal).getBytes());
+        os.write(retJson.toString().getBytes());
         os.close();
+        System.out.println(dateFormat.format(date) + ":Send message, finished handling");
 
     }
 }

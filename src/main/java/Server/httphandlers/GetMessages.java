@@ -11,6 +11,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -18,6 +21,10 @@ import java.util.Iterator;
  */
 public class GetMessages implements HttpHandler {
     public void handle(HttpExchange he) throws IOException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        System.out.println(dateFormat.format(date) + ":Get messages, started handling");
+
         JSONArray jsonArr = null;
         InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
         BufferedReader br = new BufferedReader(isr);
@@ -26,13 +33,15 @@ public class GetMessages implements HttpHandler {
         try {
             postData= Constants.parseQuery(query);
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.out.println(dateFormat.format(date) + ":Error");
+            e.printStackTrace();
         }
 
         try {
             query=Constants.getSelectMessagesQuery(postData);
             jsonArr = getConversations(MySQLQueryExecutor.getInstance().getMessages(query));
         } catch (Exception e) {
+            System.out.println(dateFormat.format(date) + ":Error");
             e.printStackTrace();
         }
 
@@ -44,6 +53,7 @@ public class GetMessages implements HttpHandler {
         OutputStream os = he.getResponseBody();
         os.write(ret.getBytes());
         os.close();
+        System.out.println(dateFormat.format(date) + ":Get messages, finished handling");
     }
     private JSONArray getConversations(JSONArray jsonArr) {
         JSONArray ret=new JSONArray();

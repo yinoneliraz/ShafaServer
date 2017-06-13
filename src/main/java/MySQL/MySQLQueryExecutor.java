@@ -185,7 +185,8 @@ public class MySQLQueryExecutor {
 					}
 					json.put("swap",rs.getString("swap"));
             		json.put("price", rs.getString("price"));
-            		json.put("from", rs.getString("from"));
+					json.put("from", rs.getString("from"));
+					json.put("owner_id", rs.getString("owner_id"));
 					jsonArr.add(json);
 
 				} catch (Exception e) {
