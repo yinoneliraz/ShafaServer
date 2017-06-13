@@ -59,9 +59,9 @@ public class GetMyItems implements HttpHandler {
         myItems.put("sold",sold);
         myItems.put("notSold",notSold);
         String ret=myItems.toString();
-        he.sendResponseHeaders(200, ret.length());
+        he.sendResponseHeaders(200, ret.getBytes().length);
         OutputStream os = he.getResponseBody();
-        os.write(ret.toString().getBytes());
+        os.write(ret.getBytes());
         os.close();
         System.out.println(dateFormat.format(date) + ":Get my items finished");
     }

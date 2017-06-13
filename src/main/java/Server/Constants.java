@@ -81,7 +81,6 @@ public class Constants {
 				"    AND isSold = 0"+
 				" ORDER BY distance" +
 				" LIMIT " + startingItem + " , " + endingItem + " ;";
-		System.out.println(ret.replace("\t"," ") + "\n");
 		return ret.replace("\t"," ");
 	}
 	
@@ -174,7 +173,6 @@ public class Constants {
 
 		String ret="SELECT DISTINCT * FROM Shafa.items " +
 				"WHERE owner_id = " + userId + " ;";
-		System.out.println(ret + "\n");
 		return ret;
 	}
 
