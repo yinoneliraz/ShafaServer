@@ -25,6 +25,8 @@ public class Main {
         server.createContext("/singleItem",  new GetSingleItem());
         server.createContext("/getMessageCount",  new GetMessageCount());
         server.createContext("/sellItem",  new SellItem());
+        server.createContext("/addUser",  new AddUser());
+        server.createContext("/editItem",  new EditItem());
         server.setExecutor(null);
         server.start();
         System.out.println(server.getAddress());

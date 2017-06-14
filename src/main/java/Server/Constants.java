@@ -1,5 +1,8 @@
 package Server;
 import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -217,6 +220,27 @@ public class Constants {
 				" `messages`.`messageId` > " + startingMessage +
 				" ORDER BY `messages`.`messageId`;";
 		return ret;
+	}
+
+	public static String getInserUserQuery(JSONObject params) {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		String ret="INSERT INTO `Shafa`.`users` (`userID`, `joinDate`) VALUES ("+params.get("userID")+", '"+dateFormat.format(date)+"');";
+		return ret;
+	}
+
+	public static String getEditItemQuery(JSONObject params) {
+		String ret="UPDATE `shafa`.`items` " +
+				"SET `name` = "+params.get("name")+", " +
+				"`size` = "+params.get("size")+", " +
+				"`price` = "+params.get("price")+", " +
+				"`description` = "+params.get("description")+", " +
+				"`image` = "+params.get("image")+", " +
+				"`itemType` = "+params.get("itemType")+", " +
+				"`isSold` = '0' " +
+				"WHERE `id` = "+params.get("itemID")+";";
+		return ret;
+
 	}
 }
 
