@@ -138,6 +138,7 @@ public class MySQLQueryExecutor {
 				json.put("swap",rs.getString("swap"));
 				json.put("price", rs.getString("price"));
 				json.put("from", rs.getString("from"));
+				json.put("itemType", rs.getString("itemType"));
 				System.out.println("JSON is ready");
 			} catch (Exception e) {
 				System.out.println("Failure getting single item:");
@@ -187,6 +188,8 @@ public class MySQLQueryExecutor {
             		json.put("price", rs.getString("price"));
 					json.put("from", rs.getString("from"));
 					json.put("owner_id", rs.getString("owner_id"));
+					json.put("isSold", rs.getString("isSold"));
+					json.put("itemType", rs.getString("itemType"));
 					jsonArr.add(json);
 
 				} catch (Exception e) {

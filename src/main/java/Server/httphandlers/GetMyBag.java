@@ -49,7 +49,7 @@ public class GetMyBag implements HttpHandler {
         Iterator it= jsonArr.iterator();
         while(it.hasNext()){
             JSONObject obj=(JSONObject)it.next();
-            if(obj.get("isSold")=="1"){
+            if(obj.get("isSold").toString().equals("1")){
                 sold.add(obj);
             }
             else{

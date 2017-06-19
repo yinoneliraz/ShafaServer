@@ -103,25 +103,6 @@ public class Constants {
     	JSONObject ret = null;
 		JSONParser parser1 = new JSONParser();
 		return (JSONObject)parser1.parse(query);
-//    	if (query != null) {
-//    		String pairs[] = query.split("[&]");
-//    		for (String pair : pairs) {
-//    			String param[] = pair.split("[=]");
-//    			String key = null;
-//    			if (param.length > 0) {
-//    				key = URLDecoder.decode(param[0],
-//    					System.getProperty("file.encoding"));
-//    			}
-//
-//    			if(key!= null){
-//					JSONParser parser = new JSONParser();
-//					Object obj = parser.parse(key);
-//    				ret=(JSONObject) obj;
-//    				return ret;
-//    			}
-//    		}
-//    	}
-//		return ret;
     }
     
     public static String getBasketInsertQuery(JSONObject params){
@@ -167,7 +148,7 @@ public class Constants {
 				"FROM " +
 				"    Shafa.baskets " +
 				"        INNER JOIN " +
-				"    items ON baskets.userID = "+userID+"; ";
+				"    items ON items.id=baskets.itemID where baskets.userID = "+userID+";";
 		return ret;
     }
 
@@ -230,13 +211,13 @@ public class Constants {
 	}
 
 	public static String getEditItemQuery(JSONObject params) {
-		String ret="UPDATE `shafa`.`items` " +
-				"SET `name` = "+params.get("name")+", " +
-				"`size` = "+params.get("size")+", " +
-				"`price` = "+params.get("price")+", " +
-				"`description` = "+params.get("description")+", " +
-				"`image` = "+params.get("image")+", " +
-				"`itemType` = "+params.get("itemType")+", " +
+		String ret="UPDATE `Shafa`.`items` " +
+				"SET `name` = '"+params.get("name")+"', " +
+				"`size` = '"+params.get("size")+"', " +
+				"`price` = '"+params.get("price")+"', " +
+				"`description` = '"+params.get("description")+"', " +
+				"`image` = '"+params.get("image")+"', " +
+				"`itemType` = '"+params.get("itemType")+"', " +
 				"`isSold` = '0' " +
 				"WHERE `id` = "+params.get("itemID")+";";
 		return ret;
