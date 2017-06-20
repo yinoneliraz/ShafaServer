@@ -1,6 +1,7 @@
 package Server.httphandlers;
 
 import MySQL.MySQLQueryExecutor;
+import SendData.FireBase;
 import Server.Constants;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -55,7 +56,10 @@ public class SendMessage implements HttpHandler {
         OutputStream os = he.getResponseBody();
         os.write(retJson.toString().getBytes());
         os.close();
+        System.out.println(dateFormat.format(date) + ":Send message, finished handling client");
+        System.out.println(dateFormat.format(date) + ":Send message, sending push");
+        FireBase fb=FireBase.getInstance();
+        fb.sendMessage(fb.getUserTokenByFacebookID(String.valueOf(params.get("toUserId"))),"הודעה חדשה","מישהו מעוניין בפריט שלך");
         System.out.println(dateFormat.format(date) + ":Send message, finished handling");
-
     }
 }

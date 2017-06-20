@@ -157,6 +157,31 @@ public class MySQLQueryExecutor {
 		return json;
 	}
 
+	public String getFireBaseToken(String fbID){
+		con = getRemoteConnection();
+		ResultSet rs=null;
+		String res="";
+		try {
+			System.out.println("Got FireBae token request\nExecuting");
+			stmt = con.createStatement();
+			rs = stmt.executeQuery("select fireBaseToken from users where userID="+fbID+";");
+			System.out.println("Got results\nParsing");
+			while(rs.next()){
+				res=rs.getString("fireBaseToken");
+			}
+		}
+		catch (SQLException sqlEx) {
+			System.out.println("Failure getting items:");
+			sqlEx.printStackTrace();
+		}
+		finally {
+			cleanUp(rs,stmt);
+			closeConnection();
+		}
+		System.out.println("Finished parsing");
+		return res;
+	}
+
 	public JSONArray getItems(String query){
 		con = getRemoteConnection();
 		ResultSet rs=null;

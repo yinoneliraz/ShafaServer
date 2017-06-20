@@ -1,5 +1,7 @@
 package SendData;
 
+import MySQL.MySQLQueryExecutor;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,5 +25,9 @@ public class FireBase {
     public void sendMessage(String uID,String title,String msg){
         FireBaseMessage fMSG=new FireBaseMessage(uID,title,msg);
         exec.execute(fMSG);
+    }
+
+    public String getUserTokenByFacebookID(String fbID){
+        return MySQLQueryExecutor.getInstance().getFireBaseToken(fbID);
     }
 }

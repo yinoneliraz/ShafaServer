@@ -9,7 +9,7 @@ import org.json.JSONObject;
  * Created by Yinon on 18/06/2017.
  */
 public class FireBaseMessage implements Runnable{
-    public final static String AUTH_KEY_FCM ="AIzaSyCBSYNl_KEvLAeq-7pW_r0MghhSSu1T5ik";
+    public final static String AUTH_KEY_FCM ="AAAAI8yKOrw:APA91bGvcq3GnKeUaFm5Zypjf9GrwsV6QPZySSwhfXWaeW8vc9RRdV3Nd8Va3rwG2-YaXboBGTjHg67YgncIHgzd_F8oGFbpyfbTXzI1aGM__eL9uOHdwv_VhAT2zi_AJFQjJVeGlUjX";
     public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
     String userID,title,msg;
 
@@ -40,7 +40,6 @@ public class FireBaseMessage implements Runnable{
         JSONObject info = new JSONObject();
         info.put("title", title); // Notification title
         info.put("body", message); // Notification body
-        info.put("image", "https://lh6.googleusercontent.com/-sYITU_cFMVg/AAAAAAAAAAI/AAAAAAAAABM/JmQNdKRPSBg/photo.jpg");
         info.put("type", "message");
         json.put("data", info);
         System.out.println(json.toString());

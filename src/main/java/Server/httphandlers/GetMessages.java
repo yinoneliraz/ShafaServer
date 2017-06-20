@@ -55,6 +55,7 @@ public class GetMessages implements HttpHandler {
         os.close();
         System.out.println(dateFormat.format(date) + ":Get messages, finished handling");
     }
+
     private JSONArray getConversations(JSONArray jsonArr) {
         JSONArray ret=new JSONArray();
         Iterator<Object> it = jsonArr.iterator();
@@ -63,27 +64,28 @@ public class GetMessages implements HttpHandler {
             JSONObject info=new JSONObject();
             info.put("fromUserName",jObj.get("fromUserName"));
             info.put("fromUserId",jObj.get("fromUserId"));
-            info.put("fromUserImage",jObj.get("fromUserImg"));
             info.put("toUserName",jObj.get("toUserName"));
             info.put("toUserId",jObj.get("toUserId"));
-            info.put("toUserImage",jObj.get("toUserImg"));
             String sessionID=""+
                     Math.max(Integer.parseInt(jObj.get("fromUserId").toString()),Integer.parseInt(jObj.get("toUserId").toString()))+
                     "_" +
-                    Math.min(Integer.parseInt(jObj.get("fromUserId").toString()),Integer.parseInt(jObj.get("toUserId").toString()));
+                    Math.min(Integer.parseInt(jObj.get("fromUserId").toString()),Integer.parseInt(jObj.get("toUserId").toString()))+
+                    "_" + jObj.get("regardingItem").toString();
 
             info.put("sessionId",sessionID);
             info.put("regardingItem",jObj.get("regardingItem"));
             it.remove();
             String aSide=jObj.get("fromUserId").toString();
             String bSide=jObj.get("toUserId").toString();
+            String regardingItem=jObj.get("regardingItem").toString();
             JSONArray msgList=new JSONArray();
             while(it.hasNext()) {
                 JSONObject jconvObj=(JSONObject)it.next();
                 if((jconvObj.get("fromUserId").toString().equals(aSide) &&
                         jconvObj.get("toUserId").toString().equals(bSide)) ||
                        (jconvObj.get("toUserId").toString().equals(aSide) &&
-                        jconvObj.get("fromUserId").toString().equals(bSide))){
+                        jconvObj.get("fromUserId").toString().equals(bSide)) &&
+                               jconvObj.get("regardingItem").toString().equals(regardingItem)){
                     JSONObject messageObj=new JSONObject();
                     messageObj.put("messageId",jconvObj.get("messageId"));
                     messageObj.put("sender",jconvObj.get("fromUserName"));

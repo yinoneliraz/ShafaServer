@@ -163,18 +163,18 @@ public class Constants {
 	public static String getInsertMessageQuery(JSONObject params) throws  Exception{
 		String ret="INSERT INTO `Shafa`.`messages`(`fromUserId`,`toUserId`,`fromUserImg`,`toUserImg`," +
 				"`fromUserName`,`toUserName`,`messageStr`,`regardingItem`,`itemImage`, `messageDate`)VALUES('"+params.get("fromUserId")+"','" +
-				params.get("toUserId")+"','"+params.get("fromUserImg")+"','"+params.get("toUserImg")+"','"+params.get("fromUserName")+
+				params.get("toUserId")+"','"+params.get("fromUserName")+
 				"','"+params.get("toUserName")+"','"+params.get("messageStr")+"','"+params.get("regardingItem")+
-				"','"+params.get("itemImage")+"', '"+params.get("messageDate")+"');";
+				"', '"+params.get("messageDate")+"');";
 		return ret;
 	}
 
 	public static String getSelectMessagesQuery(JSONObject params) throws  Exception{
 		String startingMessage=params.get("fromMessageId")==null ? "0" : params.get("fromMessageId").toString();
 		String ret=	"SELECT `messages`.`messageId`, `messages`.`fromUserId`, `messages`.`toUserId`, " +
-						"`messages`.`fromUserImg`, `messages`.`toUserImg`, `messages`.`fromUserName`, " +
+						"`messages`.`fromUserName`, " +
 						"`messages`.`toUserName`, `messages`.`messageStr`, `messages`.`regardingItem` " +
-						", `messages`.`itemImage`, `messages`.`messageDate` " +
+						", `messages`.`messageDate` " +
 					"FROM `Shafa`.`messages` " +
 					"WHERE `messages`.`toUserId`='"+params.get("userId")+"' OR " +
 					"`messages`.`fromUserId`='"+params.get("userId")+"' AND" +
@@ -222,6 +222,11 @@ public class Constants {
 				"WHERE `id` = "+params.get("itemID")+";";
 		return ret;
 
+	}
+
+	public static String getUpdateUserQuery(JSONObject params) {
+		String ret = "UPDATE `Shafa`.`users` SET `fireBaseToken` = "+params.get("token")+" WHERE `userID` = "+params.get("userID")+";";
+		return ret;
 	}
 }
 
