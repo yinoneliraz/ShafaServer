@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
-import SendData.FireBase;
 import Server.httphandlers.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -29,10 +28,10 @@ public class Main {
         server.createContext("/addUser",  new AddUser());
         server.createContext("/editItem",  new EditItem());
         server.createContext("/updateUserToken",  new UpdateUserToken());
+        server.createContext("/deleteItem",  new DeleteItem());
         server.setExecutor(null);
         server.start();
         System.out.println(server.getAddress());
-        FireBase.getInstance().sendMessage("B8hvAxAgZERjpUkhCf0xGEvqwZ22","ניסיון","תוכן");
     }
 
 

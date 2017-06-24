@@ -98,7 +98,17 @@ public class Constants {
 				params.get("itemType")+"');";
 		return ret;
 	}
-	
+
+	public static String getDeleteItemQuery1(JSONObject params) throws Exception{
+		String ret = "INSERT INTO deletedItems select * from items where id = "+params.get("itemID")+";";
+		return ret;
+	}
+
+	public static String getDeleteItemQuery2(JSONObject params) throws Exception{
+		String ret = "DELETE FROM items where id = "+params.get("itemID")+";";
+		return ret;
+	}
+
     public static JSONObject parseQuery(String query) throws Exception {
     	JSONObject ret = null;
 		JSONParser parser1 = new JSONParser();
@@ -161,11 +171,12 @@ public class Constants {
 	}
 
 	public static String getInsertMessageQuery(JSONObject params) throws  Exception{
-		String ret="INSERT INTO `Shafa`.`messages`(`fromUserId`,`toUserId`,`fromUserImg`,`toUserImg`," +
-				"`fromUserName`,`toUserName`,`messageStr`,`regardingItem`,`itemImage`, `messageDate`)VALUES('"+params.get("fromUserId")+"','" +
+		String ret="INSERT INTO `Shafa`.`messages`(`fromUserId`,`toUserId`," +
+				"`fromUserName`,`toUserName`,`messageStr`,`regardingItem`," +
+				" `messageDate`)VALUES('"+params.get("fromUserId")+"','" +
 				params.get("toUserId")+"','"+params.get("fromUserName")+
-				"','"+params.get("toUserName")+"','"+params.get("messageStr")+"','"+params.get("regardingItem")+
-				"', '"+params.get("messageDate")+"');";
+				"','"+params.get("toUserName")+"','"+params.get("messageStr")+"','"
+				+params.get("regardingItem")+ "', '"+params.get("messageDate")+"');";
 		return ret;
 	}
 
@@ -174,10 +185,10 @@ public class Constants {
 		String ret=	"SELECT `messages`.`messageId`, `messages`.`fromUserId`, `messages`.`toUserId`, " +
 						"`messages`.`fromUserName`, " +
 						"`messages`.`toUserName`, `messages`.`messageStr`, `messages`.`regardingItem` " +
-						", `messages`.`messageDate` " +
-					"FROM `Shafa`.`messages` " +
-					"WHERE `messages`.`toUserId`='"+params.get("userId")+"' OR " +
-					"`messages`.`fromUserId`='"+params.get("userId")+"' AND" +
+						", `messages`.`messageDate`, `items`.`name` " +
+					"FROM `Shafa`.`messages` INNER JOIN `items` ON `items`.`id`=`messages`.`regardingItem` " +
+					"WHERE (`messages`.`toUserId`='"+params.get("userId")+"' OR " +
+					"`messages`.`fromUserId`='"+params.get("userId")+"') AND" +
 					" `messages`.`messageId` > " + startingMessage +
 					" ORDER BY `messages`.`messageId`;";
 		return ret;
@@ -206,7 +217,8 @@ public class Constants {
 	public static String getInserUserQuery(JSONObject params) {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
-		String ret="INSERT INTO `Shafa`.`users` (`userID`, `joinDate`) VALUES ("+params.get("userID")+", '"+dateFormat.format(date)+"');";
+		String ret="INSERT INTO `Shafa`.`users` (`userID`, `joinDate`,`fireBaseToken`) VALUES ("
+				+params.get("userID")+", '"+dateFormat.format(date)+"','"+params.get("fireBaseToken")+"');";
 		return ret;
 	}
 
@@ -225,7 +237,7 @@ public class Constants {
 	}
 
 	public static String getUpdateUserQuery(JSONObject params) {
-		String ret = "UPDATE `Shafa`.`users` SET `fireBaseToken` = "+params.get("token")+" WHERE `userID` = "+params.get("userID")+";";
+		String ret = "UPDATE `Shafa`.`users` SET `fireBaseToken` = '"+params.get("fireBaseToken")+"' WHERE `userID` = '"+params.get("userID")+"';";
 		return ret;
 	}
 }

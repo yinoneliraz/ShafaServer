@@ -9,7 +9,7 @@ import org.json.JSONObject;
  * Created by Yinon on 18/06/2017.
  */
 public class FireBaseMessage implements Runnable{
-    public final static String AUTH_KEY_FCM ="AAAAI8yKOrw:APA91bGvcq3GnKeUaFm5Zypjf9GrwsV6QPZySSwhfXWaeW8vc9RRdV3Nd8Va3rwG2-YaXboBGTjHg67YgncIHgzd_F8oGFbpyfbTXzI1aGM__eL9uOHdwv_VhAT2zi_AJFQjJVeGlUjX";
+    public final static String AUTH_KEY_FCM ="AIzaSyAA0-j6_sasevWXzq4BT4ppkiOT2KpErRU";
     public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
     String userID,title,msg;
 
@@ -36,12 +36,17 @@ public class FireBaseMessage implements Runnable{
         conn.setRequestProperty("Content-Type","application/json");
 
         JSONObject json = new JSONObject();
-        json.put("to",userDeviceIdKey.trim());
+        JSONObject notif = new JSONObject();
         JSONObject info = new JSONObject();
+        notif.put("title",title);
+        notif.put("body",message);
+        info.put("badge", "1");
         info.put("title", title); // Notification title
         info.put("body", message); // Notification body
         info.put("type", "message");
         json.put("data", info);
+        json.put("to",userDeviceIdKey.trim());
+        json.put("notification",notif);
         System.out.println(json.toString());
 
         OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());

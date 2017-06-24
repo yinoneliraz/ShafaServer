@@ -82,14 +82,12 @@ public class MySQLQueryExecutor {
 				json.put("messageId", rs.getString("messageId"));
 				json.put("fromUserId", rs.getString("fromUserId"));
 				json.put("toUserId", rs.getString("toUserId"));
-				json.put("fromUserImg", rs.getString("fromUserImg"));
-				json.put("toUserImg", rs.getString("toUserImg"));
 				json.put("fromUserName", rs.getString("fromUserName"));
 				json.put("toUserName", rs.getString("toUserName"));
 				json.put("messageStr",rs.getString("messageStr"));
 				json.put("regardingItem",rs.getString("regardingItem"));
-				json.put("itemImage",rs.getString("itemImage"));
 				json.put("messageDate",rs.getString("messageDate"));
+				json.put("itemName",rs.getString("name"));
 				jsonArr.add(json);
 			}
 			rs.close();

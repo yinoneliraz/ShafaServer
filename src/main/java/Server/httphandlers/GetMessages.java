@@ -23,7 +23,6 @@ public class GetMessages implements HttpHandler {
     public void handle(HttpExchange he) throws IOException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-        System.out.println(dateFormat.format(date) + ":Get messages, started handling");
 
         JSONArray jsonArr = null;
         InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
@@ -53,7 +52,6 @@ public class GetMessages implements HttpHandler {
         OutputStream os = he.getResponseBody();
         os.write(ret.getBytes());
         os.close();
-        System.out.println(dateFormat.format(date) + ":Get messages, finished handling");
     }
 
     private JSONArray getConversations(JSONArray jsonArr) {
@@ -66,19 +64,28 @@ public class GetMessages implements HttpHandler {
             info.put("fromUserId",jObj.get("fromUserId"));
             info.put("toUserName",jObj.get("toUserName"));
             info.put("toUserId",jObj.get("toUserId"));
+            info.put("regardingItem",jObj.get("regardingItem"));
             String sessionID=""+
-                    Math.max(Integer.parseInt(jObj.get("fromUserId").toString()),Integer.parseInt(jObj.get("toUserId").toString()))+
+                    Math.max(Long.parseLong(jObj.get("fromUserId").toString()),Long.parseLong(jObj.get("toUserId").toString()))+
                     "_" +
-                    Math.min(Integer.parseInt(jObj.get("fromUserId").toString()),Integer.parseInt(jObj.get("toUserId").toString()))+
+                    Math.min(Long.parseLong(jObj.get("fromUserId").toString()),Long.parseLong(jObj.get("toUserId").toString()))+
                     "_" + jObj.get("regardingItem").toString();
 
             info.put("sessionId",sessionID);
-            info.put("regardingItem",jObj.get("regardingItem"));
+            info.put("itemName",jObj.get("itemName"));
             it.remove();
             String aSide=jObj.get("fromUserId").toString();
             String bSide=jObj.get("toUserId").toString();
             String regardingItem=jObj.get("regardingItem").toString();
             JSONArray msgList=new JSONArray();
+            JSONObject messageObj=new JSONObject();
+            messageObj.put("messageId",jObj.get("messageId"));
+            messageObj.put("sender",jObj.get("fromUserName"));
+            messageObj.put("receiver",jObj.get("toUserName"));
+            messageObj.put("date",jObj.get("messageDate"));
+            messageObj.put("text",jObj.get("messageStr"));
+            msgList.add(messageObj);
+
             while(it.hasNext()) {
                 JSONObject jconvObj=(JSONObject)it.next();
                 if((jconvObj.get("fromUserId").toString().equals(aSide) &&
@@ -86,7 +93,10 @@ public class GetMessages implements HttpHandler {
                        (jconvObj.get("toUserId").toString().equals(aSide) &&
                         jconvObj.get("fromUserId").toString().equals(bSide)) &&
                                jconvObj.get("regardingItem").toString().equals(regardingItem)){
-                    JSONObject messageObj=new JSONObject();
+                    if(info.get("sessionStartDate")==null){
+                        info.put("sessionStartDate",jconvObj.get("messageDate"));
+                    }
+                    messageObj=new JSONObject();
                     messageObj.put("messageId",jconvObj.get("messageId"));
                     messageObj.put("sender",jconvObj.get("fromUserName"));
                     messageObj.put("receiver",jconvObj.get("toUserName"));
