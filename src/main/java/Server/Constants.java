@@ -34,10 +34,12 @@ public class Constants {
                     "    `items`.`itemType` = 'accessories' ";
             unionQuery+="UNION ALL ";
         }
+        boolean flag=false;
 		for(int i=0;i<sizeArray.size();i++){
 			JSONArray temp=(JSONArray)sizeArray.get(i);
 			if(temp.size()==0)
 				continue;
+			flag=true;
 			String sizeStr="(";
 			for(Object part:temp){
 				sizeStr+="\""+String.valueOf(part)+"\",";
@@ -55,6 +57,9 @@ public class Constants {
 			if(i<sizeArray.size()-1){
 				unionQuery+="UNION ALL ";
 			}
+		}
+		if(!flag){
+			return "";
 		}
 		if(unionQuery.endsWith("UNION ALL ")){
 			unionQuery=unionQuery.substring(0,unionQuery.lastIndexOf("UNION ALL "));
@@ -81,7 +86,7 @@ public class Constants {
 				" WHERE"+
 				"    dItemID IS NULL"+
 				" HAVING distance < '" + radius + "' AND price <= " + topPrice + " AND price>=" + bottomPrice +
-				"    AND isSold = 0"+
+				"    AND isSold = 0 AND owner_id <> " + params.get("userID") +
 				" ORDER BY distance" +
 				" LIMIT " + startingItem + " , " + endingItem + " ;";
 		return ret.replace("\t"," ");
@@ -99,6 +104,11 @@ public class Constants {
 		return ret;
 	}
 
+	public static String getSelectSpecialsQuery(JSONObject params) throws Exception{
+		String ret = "SELECT * FROM Shafa.specials where userID='"+ params.get("owner_id")+"';";
+		return ret;
+	}
+
 	public static String getDeleteItemQuery1(JSONObject params) throws Exception{
 		String ret = "INSERT INTO deletedItems select * from items where id = "+params.get("itemID")+";";
 		return ret;
@@ -106,6 +116,17 @@ public class Constants {
 
 	public static String getDeleteItemQuery2(JSONObject params) throws Exception{
 		String ret = "DELETE FROM items where id = "+params.get("itemID")+";";
+		return ret;
+	}
+
+
+	public static String getDeleteFromMyBagItemQuery1(JSONObject params) throws Exception{
+		String ret = "INSERT INTO dislike select * from baskets where itemID = "+params.get("itemID")+" and userID=" + params.get("userID") + ";";
+		return ret;
+	}
+
+	public static String getDeleteFromMyBagItemQuery2(JSONObject params) throws Exception{
+		String ret = "DELETE FROM baskets where itemID = "+params.get("itemID")+" and userID=" + params.get("userID") + ";";
 		return ret;
 	}
 
@@ -127,11 +148,11 @@ public class Constants {
     	return ret;
     }
 
-	public static String getUpdateItemToSell(JSONObject params){
-		String ret1="",ret2="";
-		ret1 = "UPDATE `Shafa`.`items` SET `isSold`='1' WHERE `id`='"+params.get("itemID")+"';";
-		ret2 = "INSERT INTO `Shafa`.`sold` (`itemID`, `soldToID`) VALUES ("+params.get("itemID")+", "+params.get("userID")+");\n";
-		return ret1+"\n"+ret2;
+	public static String getUpdateItemToSell(JSONObject params,int index){
+		if(index==1)
+			return "UPDATE `Shafa`.`items` SET `isSold`='1' WHERE `id`='"+params.get("itemID")+"';";
+		else
+			return "INSERT INTO `Shafa`.`sold` (`itemID`, `soldToID`) VALUES ('"+params.get("itemID")+"', '"+params.get("userID")+"');\n";
 	}
 
 
@@ -217,8 +238,11 @@ public class Constants {
 	public static String getInserUserQuery(JSONObject params) {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
-		String ret="INSERT INTO `Shafa`.`users` (`userID`, `joinDate`,`fireBaseToken`) VALUES ("
-				+params.get("userID")+", '"+dateFormat.format(date)+"','"+params.get("fireBaseToken")+"');";
+		String userName=params.get("userName").toString();
+		if(userName==null)
+			userName="";
+		String ret="INSERT INTO `Shafa`.`users` (`userID`, `joinDate`,`fireBaseToken`, `userName`) VALUES ("
+				+params.get("userID")+", '"+dateFormat.format(date)+"','"+params.get("fireBaseToken")+"','"+userName+"');";
 		return ret;
 	}
 

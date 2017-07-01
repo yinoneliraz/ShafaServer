@@ -40,6 +40,9 @@ public class FireBaseMessage implements Runnable{
         JSONObject info = new JSONObject();
         notif.put("title",title);
         notif.put("body",message);
+        notif.put("color","pink");
+        notif.put("lights","true");
+        notif.put("sound","default");
         info.put("badge", "1");
         info.put("title", title); // Notification title
         info.put("body", message); // Notification body

@@ -1,6 +1,7 @@
 package Server.httphandlers;
 
 import MySQL.MySQLQueryExecutor;
+import SendData.FireBase;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.json.simple.JSONObject;
@@ -55,7 +56,5 @@ public class AddUser implements HttpHandler {
         os.write(retJson.toString().getBytes());
         os.close();
         System.out.println(dateFormat.format(date) + ":Insert user, finished handling");
-
-
     }
 }

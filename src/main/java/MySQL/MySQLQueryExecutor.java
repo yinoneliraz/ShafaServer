@@ -180,6 +180,42 @@ public class MySQLQueryExecutor {
 		return res;
 	}
 
+	public JSONObject getSpeciealUsers(String query){
+		con = getRemoteConnection();
+		ResultSet rs=null;
+		JSONObject json=null;
+		try {
+			// getting Statement object to execute query
+			System.out.println("Got items request\nExecuting");
+			stmt = con.createStatement();
+			// executing SELECT query
+			rs = stmt.executeQuery(query);
+			System.out.println("Got results\nParsing");
+
+			while(rs.next()){
+				json=new JSONObject();
+				try {
+					json.put("lat", rs.getString("lat"));
+					json.put("lng", rs.getString("lng"));
+
+				} catch (Exception e) {
+					System.out.println("Failure getting items:");
+					e.printStackTrace();
+				}
+			}
+		}
+		catch (SQLException sqlEx) {
+			System.out.println("Failure getting items:");
+			sqlEx.printStackTrace();
+		}
+		finally {
+			cleanUp(rs,stmt);
+			closeConnection();
+		}
+		System.out.println("Finished parsing");
+		return json;
+	}
+
 	public JSONArray getItems(String query){
 		con = getRemoteConnection();
 		ResultSet rs=null;

@@ -15,33 +15,33 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by Yinon on 07/06/2017.
+ * Created by Yinon on 01/07/2017.
  */
-public class SellItem implements HttpHandler {
+public class DeleteItemFromMyBag implements HttpHandler {
     public void handle(HttpExchange he) throws IOException {
-        int retVal = 0;
+        int retVal=0;
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-        System.out.println(dateFormat.format(date) + ":Sell item, started handling");
+        System.out.println(dateFormat.format(date) + ":Delete from my bag, started handling");
 
         InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
-        JSONObject params = new JSONObject();
+        JSONObject params=new JSONObject();
         BufferedReader br = new BufferedReader(isr);
-        String query = br.readLine();
+        String query1 = br.readLine();
+        String query2;
         try {
-            params = Constants.parseQuery(query);
-
+            params= Constants.parseQuery(query1);
         } catch (Exception e) {
             System.out.println(dateFormat.format(date) + ":Error");
             e.printStackTrace();
         }
+
         try {
-            query = Constants.getUpdateItemToSell(params,1);
-            retVal = MySQLQueryExecutor.getInstance().executeSQL(query);
-            if(retVal==1) {
-                query = Constants.getUpdateItemToSell(params, 2);
-                retVal = MySQLQueryExecutor.getInstance().executeSQL(query);
-            }
+            query1=Constants.getDeleteFromMyBagItemQuery1(params);
+            query2=Constants.getDeleteFromMyBagItemQuery2(params);
+            retVal= MySQLQueryExecutor.getInstance().executeSQL(query1);
+            if(retVal==1)
+                retVal= MySQLQueryExecutor.getInstance().executeSQL(query2);
         } catch (Exception e) {
             System.out.println(dateFormat.format(date) + ":Error");
             e.printStackTrace();
@@ -55,6 +55,6 @@ public class SellItem implements HttpHandler {
         OutputStream os = he.getResponseBody();
         os.write(retJson.toString().getBytes());
         os.close();
-        System.out.println(dateFormat.format(date) + ":Sell item, finished handling");
+        System.out.println(dateFormat.format(date) + ":Delete from my bag, finished handling");
     }
 }

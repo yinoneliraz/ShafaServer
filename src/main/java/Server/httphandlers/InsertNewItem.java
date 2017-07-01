@@ -34,19 +34,40 @@ public class InsertNewItem implements HttpHandler {
 			System.out.println(dateFormat.format(date) + ":Error");
 			e.printStackTrace();
 		}
+		double dist= (6371 * Math.acos(Math.cos(Math.toRadians(Double.parseDouble(params.get("lat").toString()))) *
+				Math.cos(Math.toRadians(31.250498)) *
+				Math.cos(Math.toRadians(34.793083) -
+				Math.toRadians(Double.parseDouble(params.get("lng").toString()))) +
+				Math.sin(Math.toRadians(Double.parseDouble(params.get("lat").toString()))) *
+						Math.sin(Math.toRadians(31.250498))));
+		JSONObject retJson=new JSONObject();
 
-        try {
-			query=Constants.getInsertQuery(params);
-			retVal=MySQLQueryExecutor.getInstance().executeSQL(query);
+		try {
+			query = Constants.getSelectSpecialsQuery(params);
+			JSONObject ret = MySQLQueryExecutor.getInstance().getSpeciealUsers(query);
+			if (ret != null) {
+				params.put("lat", ret.get("lat"));
+				params.put("lng", ret.get("lng"));
+				query = Constants.getInsertQuery(params);
+				retVal = MySQLQueryExecutor.getInstance().executeSQL(query);
+			}
+			else{
+				if(dist>6){
+					retJson.put("output","שאפה יקרה,\nבשלב זה לא ניתן לבצע מכירות וקניות מחוץ לב\"ש.\nמבטיחים לעדכן בהקדם");
+				}
+				else{
+					query = Constants.getInsertQuery(params);
+					retVal = MySQLQueryExecutor.getInstance().executeSQL(query);
+				}
+			}
+
 		} catch (Exception e) {
 			System.out.println(dateFormat.format(date) + ":Error");
 			e.printStackTrace();
 		}
 		String encoding = "UTF-8";
 		he.getResponseHeaders().set("Content-Type", "application/json; charset=" + encoding);
-		JSONObject retJson=new JSONObject();
-		retJson.put("output",retVal==1 ? "success" : "fail");
-
+		retJson.put("output", retVal == 1 ? "success" : "fail");
 		he.sendResponseHeaders(200, retJson.toString().getBytes().length);
 		OutputStream os = he.getResponseBody();
 		os.write(retJson.toString().getBytes());

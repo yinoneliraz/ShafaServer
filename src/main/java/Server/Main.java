@@ -29,6 +29,7 @@ public class Main {
         server.createContext("/editItem",  new EditItem());
         server.createContext("/updateUserToken",  new UpdateUserToken());
         server.createContext("/deleteItem",  new DeleteItem());
+        server.createContext("/deleteFromMyBag",  new DeleteItemFromMyBag());
         server.setExecutor(null);
         server.start();
         System.out.println(server.getAddress());

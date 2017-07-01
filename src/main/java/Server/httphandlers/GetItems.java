@@ -17,7 +17,7 @@ import MySQL.MySQLQueryExecutor;
 public class GetItems implements HttpHandler {
 
 	public void handle(HttpExchange he) throws IOException {
-		JSONArray jsonArr = null;
+		JSONArray jsonArr = new JSONArray();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
 		System.out.println(dateFormat.format(date) + ":Get items, started handling");
@@ -35,7 +35,8 @@ public class GetItems implements HttpHandler {
 
 		try {
 			query=Constants.getSelectQuery(postData);
-			jsonArr = MySQLQueryExecutor.getInstance().getItems(query);
+			if(!query.equals(""))
+				jsonArr = MySQLQueryExecutor.getInstance().getItems(query);
 		} catch (Exception e) {
 			System.out.println(dateFormat.format(date) + ":Error");
 			e.printStackTrace();
