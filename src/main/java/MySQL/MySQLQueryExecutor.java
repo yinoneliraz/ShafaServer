@@ -321,4 +321,62 @@ public class MySQLQueryExecutor {
 		}
 		return ret;
 	}
+
+	public int getUserBadge(String query) {
+		con = getRemoteConnection();
+		ResultSet rs=null;
+		int ret=-1;
+		try {
+			// getting Statement object to execute query
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query);
+			if(!rs.next())
+				return -1;
+			try {
+				ret=rs.getInt("badge");
+			} catch (Exception e) {
+				System.out.println("Failure get get:");
+				e.printStackTrace();
+			}
+		}
+		catch (SQLException sqlEx) {
+			System.out.println("Failure get get:");
+			sqlEx.printStackTrace();
+			return -1;
+		}
+		finally {
+			cleanUp(rs,stmt);
+			closeConnection();
+		}
+		return ret;
+	}
+
+	public String getOS(String query) {
+		con = getRemoteConnection();
+		ResultSet rs=null;
+		String ret="";
+		try {
+			// getting Statement object to execute query
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query);
+			if(!rs.next())
+				return "";
+			try {
+				ret=rs.getString("os");
+			} catch (Exception e) {
+				System.out.println("Failure get get:");
+				e.printStackTrace();
+			}
+		}
+		catch (SQLException sqlEx) {
+			System.out.println("Failure get get:");
+			sqlEx.printStackTrace();
+			return "";
+		}
+		finally {
+			cleanUp(rs,stmt);
+			closeConnection();
+		}
+		return ret;
+	}
 }

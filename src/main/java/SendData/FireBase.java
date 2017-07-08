@@ -22,8 +22,8 @@ public class FireBase {
     private FireBase(){
     }
 
-    public void sendMessage(String uID,String title,String msg){
-        FireBaseMessage fMSG=new FireBaseMessage(uID,title,msg);
+    public void sendMessage(String uID, String title, String msg, String os, int badge){
+        FireBaseMessage fMSG=new FireBaseMessage(uID,title,msg,os,badge);
         exec.execute(fMSG);
     }
 

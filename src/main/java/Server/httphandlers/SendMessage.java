@@ -60,8 +60,11 @@ public class SendMessage implements HttpHandler {
         if(!params.get("toUserId").equals("1")){
             System.out.println(dateFormat.format(date) + ":Send message, sending push");
             FireBase fb=FireBase.getInstance();
+            MySQLQueryExecutor.getInstance().executeSQL(Constants.incBadge(params));
+            int badge=MySQLQueryExecutor.getInstance().getUserBadge(Constants.getBadge(params));
+            String opsys=MySQLQueryExecutor.getInstance().getOS(Constants.getOS(params));
             fb.sendMessage(fb.getUserTokenByFacebookID(String.valueOf(params.get("toUserId"))),params.get("fromUserName").toString()
-                    ,params.get("messageStr").toString());
+                    ,params.get("messageStr").toString(), opsys,badge);
             System.out.println(dateFormat.format(date) + ":Send message, finished handling");
         }
     }

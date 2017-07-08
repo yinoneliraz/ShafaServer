@@ -130,6 +130,33 @@ public class Constants {
 		return ret;
 	}
 
+	public static String incBadge(JSONObject params){
+		String id=params.get("userId").toString();
+		if(id==null){
+			id=params.get("userID").toString();
+		}
+		String ret = "UPDATE users SET badge = badge + 1 WHERE userID = " + id + ";";
+		return ret;
+	}
+
+	public static String resetBadge(JSONObject params){
+		String id=params.get("userId").toString();
+		if(id==null){
+			id=params.get("userID").toString();
+		}
+		String ret = "UPDATE users SET badge = 0 WHERE userID = " + id + ";";
+		return ret;
+	}
+
+	public static String getBadge(JSONObject params){
+		String id=params.get("userId").toString();
+		if(id==null){
+			id=params.get("userID").toString();
+		}
+		String ret = "select badge from users WHERE userID = = " + id + ";";
+		return ret;
+	}
+
     public static JSONObject parseQuery(String query) throws Exception {
     	JSONObject ret = null;
 		JSONParser parser1 = new JSONParser();
@@ -241,8 +268,8 @@ public class Constants {
 		String userName=params.get("userName").toString();
 		if(userName==null)
 			userName="";
-		String ret="INSERT INTO `Shafa`.`users` (`userID`, `joinDate`,`fireBaseToken`, `userName`) VALUES ("
-				+params.get("userID")+", '"+dateFormat.format(date)+"','"+params.get("fireBaseToken")+"','"+userName+"');";
+		String ret="INSERT INTO `Shafa`.`users` (`userID`, `joinDate`,`fireBaseToken`, `userName`,`os`) VALUES ("
+				+params.get("userID")+", '"+dateFormat.format(date)+"','"+params.get("fireBaseToken")+"','"+userName+"' ,'"+params.get("os")+"' );";
 		return ret;
 	}
 
@@ -261,7 +288,12 @@ public class Constants {
 	}
 
 	public static String getUpdateUserQuery(JSONObject params) {
-		String ret = "UPDATE `Shafa`.`users` SET `fireBaseToken` = '"+params.get("fireBaseToken")+"' WHERE `userID` = '"+params.get("userID")+"';";
+		String ret = "UPDATE `Shafa`.`users` SET `os`='"+params.get("os")+"' ,`fireBaseToken` = '"+params.get("fireBaseToken")+"' WHERE `userID` = '"+params.get("userID")+"';";
+		return ret;
+	}
+
+	public static String getOS(JSONObject params) {
+		String ret = "select os from users where userID='"+params.get("toUserId")+"';";
 		return ret;
 	}
 }

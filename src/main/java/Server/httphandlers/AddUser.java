@@ -2,6 +2,7 @@ package Server.httphandlers;
 
 import MySQL.MySQLQueryExecutor;
 import SendData.FireBase;
+import Server.Constants;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.json.simple.JSONObject;
@@ -48,6 +49,7 @@ public class AddUser implements HttpHandler {
             query=Server.Constants.getUpdateUserQuery(params);
             retVal = MySQLQueryExecutor.getInstance().executeSQL(query);
         }
+        MySQLQueryExecutor.getInstance().executeSQL(Constants.resetBadge(params));
         retJson.put("dup", dup ? "true" : "false");
         retJson.put("output", retVal == 1 ? "success" : "fail");
 
