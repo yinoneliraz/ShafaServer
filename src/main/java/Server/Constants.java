@@ -206,7 +206,7 @@ public class Constants {
 				"FROM " +
 				"    Shafa.baskets " +
 				"        INNER JOIN " +
-				"    items ON items.id=baskets.itemID where baskets.userID = "+userID+" order by items.id desc;";
+				"    items ON items.id=baskets.itemID where baskets.userID = "+userID+" order by baskets.likeID desc;";
 		return ret;
     }
 
