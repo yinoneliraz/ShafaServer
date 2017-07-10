@@ -206,7 +206,7 @@ public class Constants {
 				"FROM " +
 				"    Shafa.baskets " +
 				"        INNER JOIN " +
-				"    items ON items.id=baskets.itemID where baskets.userID = "+userID+";";
+				"    items ON items.id=baskets.itemID where baskets.userID = "+userID+" order by items.id desc;";
 		return ret;
     }
 
@@ -214,7 +214,7 @@ public class Constants {
 		String userId=String.valueOf(params.get("userID"));
 
 		String ret="SELECT DISTINCT * FROM Shafa.items " +
-				"WHERE owner_id = " + userId + " ;";
+				"WHERE owner_id = " + userId + " order by id desc;";
 		return ret;
 	}
 
@@ -295,6 +295,10 @@ public class Constants {
 	public static String getOS(JSONObject params) {
 		String ret = "select os from users where userID='"+params.get("toUserId")+"';";
 		return ret;
+	}
+
+	public static String getRelevantUsersQuery(JSONObject params) {
+		return "select distinct fromUserID, fromUserName from messages where regardingItem="+ params.get("itemID")+" and toUserId="+params.get("userID")+";";
 	}
 }
 

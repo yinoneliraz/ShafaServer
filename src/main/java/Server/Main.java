@@ -30,6 +30,7 @@ public class Main {
         server.createContext("/updateUserToken",  new UpdateUserToken());
         server.createContext("/deleteItem",  new DeleteItem());
         server.createContext("/deleteFromMyBag",  new DeleteItemFromMyBag());
+        server.createContext("/getRelevantUsers",  new GetRelevantUsers());
         server.setExecutor(null);
         server.start();
         System.out.println(server.getAddress());
