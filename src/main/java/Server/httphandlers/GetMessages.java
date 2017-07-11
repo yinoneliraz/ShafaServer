@@ -39,7 +39,6 @@ public class GetMessages implements HttpHandler {
         try {
             query=Constants.getSelectMessagesQuery(postData);
             jsonArr = getConversations(MySQLQueryExecutor.getInstance().getMessages(query));
-            MySQLQueryExecutor.getInstance().executeSQL(Constants.resetBadge(postData));
 
         } catch (Exception e) {
             System.out.println(dateFormat.format(date) + ":Error");
@@ -54,6 +53,7 @@ public class GetMessages implements HttpHandler {
         OutputStream os = he.getResponseBody();
         os.write(ret.getBytes());
         os.close();
+        MySQLQueryExecutor.getInstance().executeSQL(Constants.resetBadge(postData));
     }
 
     private JSONArray getConversations(JSONArray jsonArr) {

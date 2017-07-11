@@ -52,7 +52,7 @@ public class InsertNewItem implements HttpHandler {
 				retVal = MySQLQueryExecutor.getInstance().executeSQL(query);
 			}
 			else{
-				if(dist>6){
+				if(dist>6 && dist < 210){
 					retJson.put("output","שאפה יקרה,\nבשלב זה לא ניתן לבצע מכירות וקניות מחוץ לב\"ש.\nמבטיחים לעדכן בהקדם");
 				}
 				else{

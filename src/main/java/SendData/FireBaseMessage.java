@@ -45,9 +45,9 @@ public class FireBaseMessage implements Runnable{
             notif.put("title",title);
             notif.put("body",message);
             notif.put("sound","default");
-            notif.put("priority","high");
-            notif.put("badge",badge);
+            notif.put("badge",String.valueOf(badge));
             notif.put("show_in_foreground",true);
+            json.put("priority","high");
             json.put("notification",notif);
             json.put("to",userDeviceIdKey.trim());
         }

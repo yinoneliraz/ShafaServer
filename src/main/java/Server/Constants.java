@@ -87,7 +87,7 @@ public class Constants {
 				"    dItemID IS NULL"+
 				" HAVING distance < '" + radius + "' AND price <= " + topPrice + " AND price>=" + bottomPrice +
 				"    AND isSold = 0 AND owner_id <> " + params.get("userID") +
-				" ORDER BY distance" +
+				" ORDER BY rand()" +
 				" LIMIT " + startingItem + " , " + endingItem + " ;";
 		return ret.replace("\t"," ");
 	}
@@ -131,29 +131,32 @@ public class Constants {
 	}
 
 	public static String incBadge(JSONObject params){
-		String id=params.get("userId").toString();
-		if(id==null){
-			id=params.get("userID").toString();
+		Object temp=params.get("toUserId");
+		if(temp==null){
+			return "";
 		}
+		String id=temp.toString();
 		String ret = "UPDATE users SET badge = badge + 1 WHERE userID = " + id + ";";
 		return ret;
 	}
 
 	public static String resetBadge(JSONObject params){
-		String id=params.get("userId").toString();
-		if(id==null){
-			id=params.get("userID").toString();
+		Object temp=params.get("userId");
+		if(temp==null){
+			temp=params.get("userID");
 		}
+		String id=temp.toString();
 		String ret = "UPDATE users SET badge = 0 WHERE userID = " + id + ";";
 		return ret;
 	}
 
 	public static String getBadge(JSONObject params){
-		String id=params.get("userId").toString();
-		if(id==null){
-			id=params.get("userID").toString();
+		Object temp=params.get("toUserId");
+		if(temp==null){
+			return "";
 		}
-		String ret = "select badge from users WHERE userID = = " + id + ";";
+		String id=temp.toString();
+		String ret = "select badge from users WHERE userID = " + id + ";";
 		return ret;
 	}
 
