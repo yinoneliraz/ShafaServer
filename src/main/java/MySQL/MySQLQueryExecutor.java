@@ -4,6 +4,7 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.*;
 
+import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 /** * Simple Java program to connect to MySQL database running on localhost and * 
@@ -416,4 +417,88 @@ public class MySQLQueryExecutor {
 		System.out.println("Finished parsing");
 		return jsonArr;
 	}
+
+	public JSONArray enumItems(String query) {
+		con = getRemoteConnection();
+		ResultSet rs=null;
+		JSONArray jsonArr=new JSONArray();
+		try {
+			// getting Statement object to execute query
+			System.out.println("Got items request\nExecuting");
+			stmt = con.createStatement();
+			// executing SELECT query
+			rs = stmt.executeQuery(query);
+			System.out.println("Got results\nParsing");
+			jsonArr=convert(rs);
+		}
+		catch (SQLException sqlEx) {
+			System.out.println("Failure getting items:");
+			sqlEx.printStackTrace();
+		}
+		finally {
+			cleanUp(rs,stmt);
+			closeConnection();
+		}
+		System.out.println("Finished parsing");
+		return jsonArr;
+	}
+
+	public static JSONArray convert( ResultSet rs ) throws SQLException, JSONException
+	{
+		JSONArray json = new JSONArray();
+		ResultSetMetaData rsmd = rs.getMetaData();
+
+		while(rs.next()) {
+			int numColumns = rsmd.getColumnCount();
+			JSONObject obj = new JSONObject();
+
+			for (int i=1; i<numColumns+1; i++) {
+				String column_name = rsmd.getColumnName(i);
+
+				if(rsmd.getColumnType(i)==java.sql.Types.ARRAY){
+					obj.put(column_name, rs.getArray(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.BIGINT){
+					obj.put(column_name, rs.getInt(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.BOOLEAN){
+					obj.put(column_name, rs.getBoolean(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.BLOB){
+					obj.put(column_name, rs.getBlob(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.DOUBLE){
+					obj.put(column_name, rs.getDouble(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.FLOAT){
+					obj.put(column_name, rs.getFloat(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.INTEGER){
+					obj.put(column_name, rs.getInt(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.VARCHAR){
+					obj.put(column_name, rs.getString(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.TINYINT){
+					obj.put(column_name, rs.getInt(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.SMALLINT){
+					obj.put(column_name, rs.getInt(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.DATE){
+					obj.put(column_name, rs.getDate(column_name));
+				}
+				else if(rsmd.getColumnType(i)==java.sql.Types.TIMESTAMP){
+					obj.put(column_name, rs.getTimestamp(column_name));
+				}
+				else{
+					obj.put(column_name, rs.getObject(column_name));
+				}
+			}
+			json.add(obj);
+		}
+
+		return json;
+	}
+
 }

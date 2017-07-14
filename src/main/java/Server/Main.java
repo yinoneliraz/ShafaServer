@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
+import Server.HTMLPages.HTMLCountLikes;
+import Server.HTMLPages.HTMLUserItems;
+import Server.HTMLPages.HTMLUsers;
 import Server.httphandlers.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -31,6 +34,9 @@ public class Main {
         server.createContext("/deleteItem",  new DeleteItem());
         server.createContext("/deleteFromMyBag",  new DeleteItemFromMyBag());
         server.createContext("/getRelevantUsers",  new GetRelevantUsers());
+        server.createContext("/Users",  new HTMLUsers());
+        server.createContext("/UserItems",  new HTMLUserItems());
+        server.createContext("/CountLikes",  new HTMLCountLikes());
         server.setExecutor(null);
         server.start();
         System.out.println(server.getAddress());

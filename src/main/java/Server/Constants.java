@@ -303,6 +303,19 @@ public class Constants {
 	public static String getRelevantUsersQuery(JSONObject params) {
 		return "select distinct fromUserID, fromUserName from messages where regardingItem="+ params.get("itemID")+" and toUserId="+params.get("userID")+";";
 	}
+
+	public static String HTMLUsersQuery() {
+		return "select * from users order by joinDate desc;";
+	}
+
+	public static String HTMLCountUserItems(){
+		return "SELECT id,owner_id, userName, count(id) count FROM Shafa.items where owner_id<> 1 group by userName order by count desc;";
+	}
+
+	public static String HTMLCountLikes(){
+		return "select items.id, items.name,items.userName, count(items.id) count from items inner join baskets on id=itemID group by id order by count desc;";
+	}
+
 }
 
 
