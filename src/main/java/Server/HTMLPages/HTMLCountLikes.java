@@ -24,7 +24,9 @@ public class HTMLCountLikes implements HttpHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ret="<html><head></head><body><table>" +
+        ret="<html><head><style>table, th, td {\n" +
+                "   border: 1px solid black;\n" +
+                "}</style></head><body><table>" +
                 "<th>Item Name</th> <th>User Name</th><th>Likes</th> ";
         for(Object obj:jsonArr){
             ret+="<tr>";

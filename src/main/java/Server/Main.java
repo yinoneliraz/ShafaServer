@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
 import Server.HTMLPages.HTMLCountLikes;
+import Server.HTMLPages.HTMLUserDetails;
 import Server.HTMLPages.HTMLUserItems;
 import Server.HTMLPages.HTMLUsers;
 import Server.httphandlers.*;
@@ -37,6 +38,7 @@ public class Main {
         server.createContext("/Users",  new HTMLUsers());
         server.createContext("/UserItems",  new HTMLUserItems());
         server.createContext("/CountLikes",  new HTMLCountLikes());
+        server.createContext("/UserDetails",  new HTMLUserDetails());
         server.setExecutor(null);
         server.start();
         System.out.println(server.getAddress());

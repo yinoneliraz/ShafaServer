@@ -316,6 +316,13 @@ public class Constants {
 		return "select items.id, items.name,items.userName, count(items.id) count from items inner join baskets on id=itemID group by id order by count desc;";
 	}
 
+	public static String HTMLGetUserDetails(String id) {
+
+		return "select count(items.id) items, (select count(*) from baskets where userID=" + id + ") likes,\n" +
+				"(select count(*) from dislike where userID=" + id + ") dislikes, \n" +
+				"(select joinDate from users where userID=" + id + ") joined,\n" +
+				"(select userName from users where userID=" + id + ") userName  from items where owner_id=" + id + ";";
+	}
 }
 
 
