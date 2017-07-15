@@ -34,14 +34,19 @@ public class HTMLUsers implements HttpHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ret="<html><head></head><body><table>" +
-                "<th>User ID</th> <th>User Name</th><th>Joined In</th> ";
+        ret="<html><head><style>table, th, td {\n" +
+                "   border: 1px solid black;\n" +
+                "}</style></head><body><table>" +
+                "<th>User ID</th> <th>User Name</th><th>Joined In</th><th>More Details</th> ";
         for(Object obj:jsonArr){
             ret+="<tr>";
             JSONObject temp=(JSONObject) obj;
             Object name=temp.get("userName");
             String userName=name==null ? "" : name.toString();
-            ret+="<td style=\"text-align:center\"><a href=\"http://facebook.com/"+temp.get("userID").toString() + "\">Link</a>"+"</td>"+ " <td style=\"text-align:center\">"+userName+"</td>"+" <td style=\"text-align:center\">"+temp.get("joinDate").toString()+"</td> ";
+            ret+="<td style=\"text-align:center\"><a href=\"http://facebook.com/"+temp.get("userID").toString() + "\">Link</a>"+"</td>"+
+                    "<td style=\"text-align:center\">"+userName+"</td>"+
+                    "<td style=\"text-align:center\">"+temp.get("joinDate").toString()+"</td>"+
+                    "<td style=\"text-align:center\"><a href=\"/UserDetails?id=" + temp.get("userID").toString() + "\">Link</a></td>";
             ret+="</tr>";
 
         }
