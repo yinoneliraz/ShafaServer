@@ -33,6 +33,11 @@ public class GetItems implements HttpHandler {
 			e.printStackTrace();
 		}
 
+		if(postData.get("userID").toString().equals("10155418397534840")){
+			postData.put("lat","31.258308");
+			postData.put("lng","34.794415");
+		}
+
 		try {
 			query=Constants.getSelectQuery(postData);
 			if(!query.equals(""))

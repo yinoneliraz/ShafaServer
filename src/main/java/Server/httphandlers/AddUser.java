@@ -50,8 +50,10 @@ public class AddUser implements HttpHandler {
             retVal = MySQLQueryExecutor.getInstance().executeSQL(query);
         }
         MySQLQueryExecutor.getInstance().executeSQL(Constants.resetBadge(params));
+        String version = System.getenv("SHAFA_VERSION");//"root";
         retJson.put("dup", dup ? "true" : "false");
         retJson.put("output", retVal == 1 ? "success" : "fail");
+        retJson.put("version", version);
 
         he.sendResponseHeaders(200, retJson.toString().getBytes().length);
         OutputStream os = he.getResponseBody();
